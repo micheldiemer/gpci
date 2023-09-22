@@ -10,10 +10,10 @@ $app->get('/semaine/:year/:week/:classe', function ($year, $week, $classe) use (
     $cours_pm = array();
     $count = 0;
     foreach ($date as $day) {
-        $cours_am[$count] = Cours::with('user', 'matiere')->whereRaw('(start >= ? AND end <= ?) and assignationSent = 1', [$day . " 08:00:00", $day . " 12:15:00"])->whereHas('classes', function($q) use($classe) {
+        $cours_am[$count] = Cours::with('user', 'matiere')->whereRaw('(start >= ? AND end <= ?) and assignationSent = 1', [$day . " 08:00:00", $day . " 12:00:00"])->whereHas('classes', function($q) use($classe) {
             $q->where('id', $classe['id']);
         })->first();
-        $cours_pm[$count] = Cours::with('user', 'matiere')->whereRaw('(start >= ? AND end <= ?) and assignationSent = 1', [$day . " 13:15:00", $day . " 17:30:00"])->whereHas('classes', function($q) use($classe) {
+        $cours_pm[$count] = Cours::with('user', 'matiere')->whereRaw('(start >= ? AND end <= ?) and assignationSent = 1', [$day . " 13:00:00", $day . " 17:00:00"])->whereHas('classes', function($q) use($classe) {
             $q->where('id', $classe['id']);
         })->first();
         $count += 1;

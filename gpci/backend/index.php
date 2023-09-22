@@ -16,8 +16,7 @@ $app = new \Slim\Slim();
 ini_set('display_errors',1);
 ini_set('display_startup_errors',1);
 error_reporting(-1);
-require_once file_exists('settings.prod.php') ? 'settings.prod.php' :
-    (file_exists('settings.dev.php') ? 'settings.dev.php' : 'settings.git.php');
+require_once file_exists('settings.prod.php') ? 'settings.prod.php' : 'settings.git.php';
 require_once 'model.php';
 require_once 'functions.php';
 require_once 'mailing.php';
@@ -29,10 +28,16 @@ require_once 'profil.php';
 require_once 'icalGenerator.php';
 require_once 'public.php';
 
+$app->get('/mailtest', function() use ($app, $mailer) {
+	mailTest($mailer);
+    $app->response->headers->set('Content-Type', 'application/json');
+    $app->response->setBody(json_encode('mailTest'));
+});
+
 $app->get('/roles', $authenticateWithRole('administrateur'), function () use ($app) {
 
     $roles = Roles::get();
-
+    
     $app->response->headers->set('Content-Type', 'application/json');
     $app->response->setBody(json_encode($roles));
 });
@@ -40,7 +45,7 @@ $app->get('/roles', $authenticateWithRole('administrateur'), function () use ($a
 $app->get('/matieres', $authenticateWithRole('planificateur'), function () use ($app) {
 
     $matieres = Matieres::get();
-
+    
     $app->response->headers->set('Content-Type', 'application/json');
     $app->response->setBody(json_encode($matieres));
 });

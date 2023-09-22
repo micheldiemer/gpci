@@ -85,7 +85,7 @@ webApp.factory("planCalendarService",
                 eventRender: eventRender,
                 eventClick: eventClick,
                 minTime: "08:00:00",
-                maxTime: "17:30:00",
+                maxTime: "17:00:00",
                 defaultView: "agendaWeek",
                 dayNames: ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"],
                 dayNamesShort: ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"],
@@ -123,14 +123,14 @@ webApp.factory("planCalendarService",
         var backgroundEvent = [
             {
                 start: "8:00",
-                end: "12:15",
+                end: "12:00",
                 dow: [1, 2, 3, 4, 5],
                 className: "coursContainer",
                 description: "Rajouter un cours"
             },
             {
-                start: "13:15",
-                end: "17:30",
+                start: "13:00",
+                end: "17:00",
                 dow: [1, 2, 3, 4, 5],
                 className: "coursContainer",
                 description: "Rajouter un cours"

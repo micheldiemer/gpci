@@ -14,6 +14,7 @@ $settings = array(
 $smtpSettings = array(
     'MAIL_HOST' => 'localhost',
     'MAIL_PORT' => 25,
+    'MAIL_PROTOCOL' => null, # ssl/tls
     'MAIL_USERNAME' => 'root@localhost',
     'MAIL_PASSWORD' => ''
 );
