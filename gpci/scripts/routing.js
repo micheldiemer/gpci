@@ -1,4 +1,4 @@
-﻿//Ici on utilise la méthode config pour déclarer le routage de l'application
+//Ici on utilise la méthode config pour déclarer le routage de l'application
 webApp.config(function($stateProvider, $urlRouterProvider, RestangularProvider, USERS_ROLES) {
 
 //Mise en place de l'url de base pour restangular

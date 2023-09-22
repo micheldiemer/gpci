@@ -1,4 +1,4 @@
-﻿webApp.factory("weekService",
+webApp.factory("weekService",
 	function ($q, notifService, Restangular) {
 	    var list = [];
 

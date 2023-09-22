@@ -1,4 +1,4 @@
-﻿//Ce controller utilise le service AdminController pour récupérer une liste des utilisateurs du serveur
+//Ce controller utilise le service AdminController pour récupérer une liste des utilisateurs du serveur
 webApp.controller("AdminController",
 	function($scope, $uibModal, Restangular, adminService){
         

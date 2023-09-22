@@ -1,4 +1,4 @@
-﻿webApp.controller("EnsCoursController",
+webApp.controller("EnsCoursController",
 	function ($scope, Session, ensCours, Restangular) {
 
 	    $scope.id = Session.id;

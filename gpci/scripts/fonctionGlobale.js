@@ -1,4 +1,4 @@
-﻿// test : function checkant le statut de la session à chaque changement de state
+// test : function checkant le statut de la session à chaque changement de state
 webApp.run(function($rootScope, $state, Authentification, AUTH_EVENTS) {
 
 	$rootScope.$on("$stateChangeStart", function (event, next) {

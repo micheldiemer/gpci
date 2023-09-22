@@ -1,4 +1,4 @@
-﻿//Ce controller utilise le service AdminController ainsi que le service pré-installé $filter ET le paramètre passé par l'URL
+//Ce controller utilise le service AdminController ainsi que le service pré-installé $filter ET le paramètre passé par l'URL
 // pour récupérer un utilisateur en particulier
 webApp.controller("AdminDetails",
 	function($scope, $timeout, $uibModalInstance,  adminService, personne, serviceRoles, Restangular){

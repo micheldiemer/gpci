@@ -1,4 +1,4 @@
-﻿webApp.controller("PlanAnneeController",
+webApp.controller("PlanAnneeController",
 	function ($scope, $uibModal, $http, classesService, weekService) {
 	    $scope.current_classes = [];
 	    $scope.next_classes = [];
