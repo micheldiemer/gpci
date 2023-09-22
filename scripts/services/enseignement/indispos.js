@@ -58,12 +58,12 @@ webApp.factory("indispoService",
                 }
                 //Si Journée -> Matin
                 else if (moment(indispo.start).hour() === 8 && moment(indispo.end).hour() === 17) {
-                    indispo.end = moment(indispo.end).hour(12).minutes(15).format("YYYY-MM-DD HH:mm:ss");
+                    indispo.end = moment(indispo.end).hour(12).minutes(00).format("YYYY-MM-DD HH:mm:ss");
                 }
                 //Si Matin -> Après-midi
                 else if (moment(indispo.start).hour() === 8 && moment(indispo.end).hour() === 12) {
-                    indispo.start = moment(indispo.start).hour(13).minutes(15).format("YYYY-MM-DD HH:mm:ss");
-                    indispo.end = moment(indispo.end).hour(17).minutes(30).format("YYYY-MM-DD HH:mm:ss");
+                    indispo.start = moment(indispo.start).hour(13).minutes(00).format("YYYY-MM-DD HH:mm:ss");
+                    indispo.end = moment(indispo.end).hour(17).minutes(00).format("YYYY-MM-DD HH:mm:ss");
                 }
                 //Si Après-midi -> Disponible
                 else if (moment(indispo.start).hour() === 13 && moment(indispo.end).hour() === 17) {
@@ -74,7 +74,7 @@ webApp.factory("indispoService",
             } else {
                 var newIndispo = {};
                 newIndispo.start = date.hour(8).format("YYYY-MM-DD HH:mm:ss");
-                newIndispo.end = date.hour(17).minutes(30).format("YYYY-MM-DD HH:mm:ss");
+                newIndispo.end = date.hour(17).minutes(00).format("YYYY-MM-DD HH:mm:ss");
                 newIndispo.isModified = true;
                 indispos.push(newIndispo);
             }

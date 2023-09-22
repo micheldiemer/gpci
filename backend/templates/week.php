@@ -48,9 +48,9 @@
 	<tbody>
 		<tr>
 			<th>
-				8h<br>
+				8h00<br>
 				-<br>
-				12h15
+				12h00
 			</th>
 			<?php
 				foreach($cours_am as $cours) {
@@ -67,9 +67,9 @@
 		</tr>
 		<tr>
 			<th>
-				13h15<br>
+				13h00<br>
 				-<br>
-				17h30
+				17h00
 			</th>
 			<?php
 				foreach($cours_pm as $cours) {

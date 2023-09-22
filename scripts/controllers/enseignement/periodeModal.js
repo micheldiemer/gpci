@@ -24,7 +24,7 @@ webApp.controller("periodeModal",
         $scope.save = function () {
             //TO Do revoir construction de la date
             $scope.indispo.start = moment($scope.indispo.start).hour(8).format("YYYY-MM-DD HH:mm:ss");;
-            $scope.indispo.end = moment($scope.indispo.end).hour(17).minutes(30).format("YYYY-MM-DD HH:mm:ss");;
+            $scope.indispo.end = moment($scope.indispo.end).hour(17).minutes(00).format("YYYY-MM-DD HH:mm:ss");;
             $scope.indispo.toSave = true;
             $uibModalInstance.close($scope.indispo);
         };

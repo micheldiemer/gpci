@@ -1,12 +1,26 @@
 <?php
 
 // Create Transport
-$transport = Swift_SmtpTransport::newInstance($smtpSettings['MAIL_HOST'], $smtpSettings['MAIL_PORT'])
+$transport = Swift_SmtpTransport::newInstance($smtpSettings['MAIL_HOST'], $smtpSettings['MAIL_PORT'], $smtpSettings['MAIL_PROTOCOL'])
     ->setUsername($smtpSettings['MAIL_USERNAME'])
     ->setPassword($smtpSettings['MAIL_PASSWORD']);
 
 // Create Mailer with our Transport.
 $mailer = Swift_Mailer::newInstance($transport);
+
+function mailTest($mailer) {
+
+    // creation du mail
+
+    $message = Swift_Message::newInstance('GPCI MAIL TEST')
+        ->setFrom(array('ifide@ifide.net' => 'IFIDE SupFormation'))
+        ->setTo('michel.diemer@yahoo.fr')
+        ->setBody('<html><h1>test</h1>Test Mail GPCI</html>', "text/html")
+        ->setContentType("text/html");
+
+    $results = $mailer->send($message);
+
+}
 
 function mailAssignationCours($cours, $mailer){
 
@@ -109,5 +123,5 @@ function mailAnnulationCours($cours, $mailer){
     // envoie
     $results = $mailer->send($message);
 }
-	
+
 ?>
