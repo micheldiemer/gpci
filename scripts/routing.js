@@ -1,8 +1,8 @@
-﻿//Ici on utilise la méthode config pour déclarer le routage de l'application
+//Ici on utilise la méthode config pour déclarer le routage de l'application
 webApp.config(function($stateProvider, $urlRouterProvider, RestangularProvider, USERS_ROLES) {
 
 //Mise en place de l'url de base pour restangular
-    RestangularProvider.setBaseUrl("http://10.0.0.9/gpci/backend");
+    RestangularProvider.setBaseUrl("http://192.168.1.38/gpci/backend");
 
 
 //Cette ligne force toute les routes autres que celles déclarées vers "/"
@@ -85,6 +85,14 @@ webApp.config(function($stateProvider, $urlRouterProvider, RestangularProvider, 
             url: "/matieres",
             templateUrl: "views/planification/matieres.html",
             controller: "PlanMatieresController",
+            data: {
+                authorizedRoles: [USERS_ROLES.planificateur]
+            }
+        })
+        .state("planification.salles", {
+            url: "/salles",
+            templateUrl: "views/planification/salles.html",
+            controller: "PlanSallesController",
             data: {
                 authorizedRoles: [USERS_ROLES.planificateur]
             }
