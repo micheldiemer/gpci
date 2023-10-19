@@ -11,6 +11,7 @@ webApp.factory("planCalendarService",
                 if (element.hasClass("coursEvent")) {
                     element.find(".fc-content").append("<p>" + event.enseignant + "</p>");
                     element.find(".fc-content").append("<p>" + event.classes + "</p>");
+                    element.find(".fc-content").append("<p>" + event.salle + "</p>");
                 }
             } else {
                 if (element.hasClass("coursContainer")) {
@@ -85,7 +86,7 @@ webApp.factory("planCalendarService",
                 eventRender: eventRender,
                 eventClick: eventClick,
                 minTime: "08:00:00",
-                maxTime: "17:30:00",
+                maxTime: "17:00:00",
                 defaultView: "agendaWeek",
                 dayNames: ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"],
                 dayNamesShort: ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"],
@@ -107,11 +108,12 @@ webApp.factory("planCalendarService",
                     classes: printClasses(rawEventData.classes),
                     start: rawEventData.start,
                     end: rawEventData.end,
-                    assignationSent: rawEventData.assignationSent
-            };
+                    assignationSent: rawEventData.assignationSent,
+                    salle: rawEventData.salle.nomSalle,
+                };
             }
         };
-        
+
         function printClasses(classes) {
             var result = "";
             classes.forEach(function(classe) {
@@ -123,14 +125,14 @@ webApp.factory("planCalendarService",
         var backgroundEvent = [
             {
                 start: "8:00",
-                end: "12:15",
+                end: "12:00",
                 dow: [1, 2, 3, 4, 5],
                 className: "coursContainer",
                 description: "Rajouter un cours"
             },
             {
-                start: "13:15",
-                end: "17:30",
+                start: "13:00",
+                end: "17:00",
                 dow: [1, 2, 3, 4, 5],
                 className: "coursContainer",
                 description: "Rajouter un cours"
