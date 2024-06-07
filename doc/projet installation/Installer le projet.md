@@ -222,4 +222,5 @@ Ajouter ce code :
 ```
 
 Puis créer un lien symbolique :  
+
 `ln -s /etc/apache2/sites-available/nom_projet.conf /var/www/nom_projet`
