@@ -192,3 +192,8 @@ Dans vscode aller aux fichier sftp et changer "remothPath" par ce chemin :
     "openSsh": false
 }
 ```
+
+1. Cliquer sur l'onglet sftp
+1. Cliquer droit et selectionner "upload"
+
+![Alt Text](img/sftp-upload.png)
