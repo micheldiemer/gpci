@@ -16,7 +16,7 @@ Voici les étapes pour installer le projet
 
 ![Alt text](img/vscode.png)
 
-## installation du serveur  
+## Installation du serveur  
 
 - Ouvré Virtual Box et cliquer sur **Nouvelle**
 
