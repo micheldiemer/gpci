@@ -16,7 +16,7 @@ Voici les étapes pour installer le projet
 
 ![Alt text](img/vscode.png)
 
-## Installation du serveur  
+## Installation du serveur  
 
 - Ouvré Virtual Box et cliquer sur **Nouvelle**
 
@@ -83,7 +83,6 @@ Changer ces information du fichier sftp.json:
 
 ## Installer apache et phpmyadmin
 
-
 Taper cet commande dans le serveur:
 **sudo apt-get -y install apache2** pour installer apache
 **sudo apt-get -y install mysql-5.6** pour installer mysql
@@ -99,27 +98,28 @@ sudo iptables -A INPUT -p tcp --dport 443 -j ACCEPT
 sudo service ufw restartuser
 
 Ajouter le site GPCI dans /etc/apache2/sites-available:
-'sudo nano /etc/apache2/sites-available/gpci.conf'
-'''conf
-<VirtualHost *:80>
+`sudo nano /etc/apache2/sites-available/gpci.conf`
 
-	ServerAdmin webmaster@localhost
-	DocumentRoot /var/www/gpci
-	<Directory /var/www/gpci>
-		AllowOverride All
-	</Directory>			
-	
-	ErrorLog ${APACHE_LOG_DIR}/error.log
-	CustomLog ${APACHE_LOG_DIR}/access.log combined
+```php
+<VirtualHost *:80>
+  ServerAdmin webmaster@localhost
+  DocumentRoot /var/www/gpci
+  <Directory /var/www/gpci>
+    AllowOverride All
+  </Directory>      
+  
+  ErrorLog ${APACHE_LOG_DIR}/error.log
+  CustomLog ${APACHE_LOG_DIR}/access.log combined
 
 </VirtualHost>
-'''
+```
 
-Ajouter phpmyadmin  a la configuration apache
-- 'sudo ln -s /etc/phpmyadmin/apache.conf /etc/apache2/conf-available/phpmyadmin.conf'
-- 'sudo a2enconf phpmyadmin'
-- 'sudo a2ensite gpci'
-- 'sudo service apache2 restart'
+Ajouter phpmyadmin à la configuration apache :
+
+- `sudo ln -s /etc/phpmyadmin/apache.conf /etc/apache2/conf-available/phpmyadmin.conf`
+- `sudo a2enconf phpmyadmin`
+- `sudo a2ensite gpci`
+- `sudo service apache2 restart`
 
 verifier en tapant **cd /etc/apache2/sites-available/** que **phpmyadmin.conf** est present
 sinon taper **nano mon_fichier.conf** et copier le code suivant
@@ -130,20 +130,20 @@ sinon taper **nano mon_fichier.conf** et copier le code suivant
 Alias /phpmyadmin /usr/share/phpmyadmin
 
 <Directory /usr/share/phpmyadmin>
-	Options FollowSymLinks
-	DirectoryIndex index.php
+  Options FollowSymLinks
+  DirectoryIndex index.php
 
-	<IfModule mod_php5.c>
-		AddType application/x-httpd-php .php
+  <IfModule mod_php5.c>
+    AddType application/x-httpd-php .php
 
-		php_flag magic_quotes_gpc Off
-		php_flag track_vars On
-		php_flag register_globals Off
-		php_admin_flag allow_url_fopen Off
-		php_value include_path .
-		php_admin_value upload_tmp_dir /var/lib/phpmyadmin/tmp
-		php_admin_value open_basedir /usr/share/phpmyadmin/:/etc/phpmyadmin/:/var/lib/phpmyadmin/:/usr/share/php/php-gettext/:/usr/share/javascript/
-	</IfModule>
+    php_flag magic_quotes_gpc Off
+    php_flag track_vars On
+    php_flag register_globals Off
+    php_admin_flag allow_url_fopen Off
+    php_value include_path .
+    php_admin_value upload_tmp_dir /var/lib/phpmyadmin/tmp
+    php_admin_value open_basedir /usr/share/phpmyadmin/:/etc/phpmyadmin/:/var/lib/phpmyadmin/:/usr/share/php/php-gettext/:/usr/share/javascript/
+  </IfModule>
 
 </Directory>
 
@@ -170,7 +170,7 @@ Alias /phpmyadmin /usr/share/phpmyadmin
 
 ## Enregistrer le projet sur le serveur
 
-dans vscode aller aux fichier sftp et changer "remothPath" par ce chemin 
+Dans vscode aller aux fichier sftp et changer "remothPath" par ce chemin :
 
 ```json
 {
@@ -200,14 +200,14 @@ Ajouter ce code
 ```conf
 <VirtualHost *:80>
 
-	ServerAdmin webmaster@localhost
-	DocumentRoot /var/www/nom_projet
-	<Directory /var/www/nom_projet>
-		AllowOverride All
-	</Directory>			
-	
-	ErrorLog ${APACHE_LOG_DIR}/error.log
-	CustomLog ${APACHE_LOG_DIR}/access.log combined
+  ServerAdmin webmaster@localhost
+  DocumentRoot /var/www/nom_projet
+  <Directory /var/www/nom_projet>
+    AllowOverride All
+  </Directory>      
+  
+  ErrorLog ${APACHE_LOG_DIR}/error.log
+  CustomLog ${APACHE_LOG_DIR}/access.log combined
 
 </VirtualHost>
 
