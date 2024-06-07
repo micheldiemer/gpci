@@ -200,8 +200,9 @@ Dans vscode aller aux fichier sftp et changer "remothPath" par ce chemin :
 
 ## Lien symbolique
 
-Aller dans le fichier **/etc/apache2/sites-available/** et crée un fichier **nom_projet.conf**
-Ajouter ce code
+Aller dans le dossier `/etc/apache2/sites-available/` et créer un fichier `nom_projet.conf`
+
+Ajouter ce code :
 
 ```php
 <VirtualHost *:80>

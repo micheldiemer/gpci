@@ -197,3 +197,9 @@ Dans vscode aller aux fichier sftp et changer "remothPath" par ce chemin :
 1. Cliquer droit et selectionner "upload"
 
 ![Alt Text](img/sftp-upload.png)
+
+## Lien symbolique
+
+Aller dans le dossier `/etc/apache2/sites-available/` et créer un fichier `nom_projet.conf`
+
+Ajouter ce code :
