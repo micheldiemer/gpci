@@ -173,3 +173,22 @@ Alias /phpmyadmin /usr/share/phpmyadmin
     Deny from All
 </Directory>
 ```
+
+## Enregistrer le projet sur le serveur
+
+Dans vscode aller aux fichier sftp et changer "remothPath" par ce chemin :
+
+```json
+{
+    "name": "Nom que vous voulez",
+    "host": "l'addresse ip de votre serveur",
+    "protocol": "sftp",
+    "port": 22,
+    "username": "username de votre serveur",
+    "username": "mot de passe de votre serveur",
+    "remotePath": "/var/www/",
+    "uploadOnSave": false,
+    "useTempFile": false,
+    "openSsh": false
+}
+```
