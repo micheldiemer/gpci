@@ -102,7 +102,6 @@ sudo iptables -A INPUT -p tcp --dport 443 -j ACCEPT
 sudo service ufw restart user
 ```
 
-
 Ajouter le site GPCI dans /etc/apache2/sites-available:
 `sudo nano /etc/apache2/sites-available/gpci.conf`
 
@@ -174,52 +173,3 @@ Alias /phpmyadmin /usr/share/phpmyadmin
     Deny from All
 </Directory>
 ```
-
-## Enregistrer le projet sur le serveur
-
-Dans vscode aller aux fichier sftp et changer "remothPath" par ce chemin :
-
-```json
-{
-    "name": "Nom que vous voulez",
-    "host": "l'addresse ip de votre serveur",
-    "protocol": "sftp",
-    "port": 22,
-    "username": "username de votre serveur",
-    "username": "mot de passe de votre serveur",
-    "remotePath": "/var/www/",
-    "uploadOnSave": false,
-    "useTempFile": false,
-    "openSsh": false
-}
-```
-
-1. Cliquer sur l'onglet sftp
-2. Cliquer droit et selectionner "upload"
-
-![Alt Text](img/sftp-upload.png)
-
-## Lien symbolique
-
-Aller dans le fichier **/etc/apache2/sites-available/** et crée un fichier **nom_projet.conf**
-Ajouter ce code
-
-```php
-<VirtualHost *:80>
-
-  ServerAdmin webmaster@localhost
-  DocumentRoot /var/www/nom_projet
-  <Directory /var/www/nom_projet>
-    AllowOverride All
-  </Directory>      
-  
-  ErrorLog ${APACHE_LOG_DIR}/error.log
-  CustomLog ${APACHE_LOG_DIR}/access.log combined
-
-</VirtualHost>
-
-# vim: syntax=apache ts=4 sw=4 sts=4 sr noet
-```
-
-puis crée un lien symbolique :  
-`ln -s /etc/apache2/sites-available/nom_projet.conf /var/www/nom_projet`

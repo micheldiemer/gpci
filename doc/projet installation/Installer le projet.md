@@ -84,18 +84,23 @@ Changer ces information du fichier sftp.json:
 ## Installer apache et phpmyadmin
 
 Taper cet commande dans le serveur:
-**sudo apt-get -y install apache2** pour installer apache
-**sudo apt-get -y install mysql-5.6** pour installer mysql
-**sudo apt-get -y install phpmyadmin** pour installer mysql
+
+```bash
+sudo apt-get -y install apache2** pour installer apache
+sudo apt-get -y install mysql-5.6** pour installer mysql
+sudo apt-get -y install phpmyadmin** pour installer mysql
+```
 
 Taper **votre-adresse-ip** pour voir si apache fonctionne
 Taper **votre-adresse-ip/phpmyadmin** pour voir si phpmyadmin fonctionne
 
 Si apache fonctionne pas taper :
 
+```bash
 sudo iptables -A INPUT -p tcp --dport 80 -j ACCEPT
 sudo iptables -A INPUT -p tcp --dport 443 -j ACCEPT
-sudo service ufw restartuser
+sudo service ufw restart user
+```
 
 Ajouter le site GPCI dans /etc/apache2/sites-available:
 `sudo nano /etc/apache2/sites-available/gpci.conf`
@@ -116,15 +121,16 @@ Ajouter le site GPCI dans /etc/apache2/sites-available:
 
 Ajouter phpmyadmin à la configuration apache :
 
-- `sudo ln -s /etc/phpmyadmin/apache.conf /etc/apache2/conf-available/phpmyadmin.conf`
-- `sudo a2enconf phpmyadmin`
-- `sudo a2ensite gpci`
-- `sudo service apache2 restart`
+```bash
+sudo ln -s /etc/phpmyadmin/apache.conf /etc/apache2/conf-available/phpmyadmin.conf
+sudo a2enconf phpmyadmin
+sudo a2ensite gpci
+sudo service apache2 restart
+```
 
-verifier en tapant **cd /etc/apache2/sites-available/** que **phpmyadmin.conf** est present
-sinon taper **nano mon_fichier.conf** et copier le code suivant
+Vérifier en tapant `cd /etc/apache2/sites-available/**` que **phpmyadmin.conf** est present sinon taper **nano mon_fichier.conf** et copier le code suivant
 
-```conf
+```php
 # phpMyAdmin default Apache configuration
 
 Alias /phpmyadmin /usr/share/phpmyadmin
@@ -197,7 +203,7 @@ Dans vscode aller aux fichier sftp et changer "remothPath" par ce chemin :
 Aller dans le fichier **/etc/apache2/sites-available/** et crée un fichier **nom_projet.conf**
 Ajouter ce code
 
-```conf
+```php
 <VirtualHost *:80>
 
   ServerAdmin webmaster@localhost
@@ -214,4 +220,5 @@ Ajouter ce code
 # vim: syntax=apache ts=4 sw=4 sts=4 sr noet
 ```
 
-puis crée un lien symbolique ln -s /etc/apache2/sites-available/nom_projet.conf /var/www/nom_projet
+Puis créer un lien symbolique :  
+`ln -s /etc/apache2/sites-available/nom_projet.conf /var/www/nom_projet`
