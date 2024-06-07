@@ -5,6 +5,7 @@
 Le but est de réaliser une application web en PHP permettant de faciliter la réalisation de planning de cours.
 
 À cette fin :
+
 * les enseignants se voient proposer une page web permettant d'indiquer au moyen de cases à cocher, leurs demi-journées d'indisponibilité,
 * les planificateurs accèdent à une page web pour semaine de cours et pour chaque demi-journée disposent d'une liste déroulante permettant de choisir quel enseignant affecter à ce cours en fonction de leurs indisponibilités,
 * les administrateurs ont la possibilité d'ouvrir et fermer les périodes de cours année scolaire par année scolaire, de définir les semaines de cours, les jours fériés, de créer/modifier/supprimer les utilisateurs et de leur attribuer des rôles.
@@ -41,9 +42,9 @@ Ces objets sont :
 * des [demi-journée](#demi-journée)
 * des [demi-journées de cours](#demi-journées-de-cours)
 * des [jours de fermeture](#jours-de-fermeture) (jours fériés par exemple)
-* des [demi-journées d'indisponibilités d'enseignants](#demi-journées-dindisponibilité-denseignants)
-* des [affectations d'enseignant à une classe](#affectation-denseignant-à-une-classe)
-* des [affectations d'enseignant à une classe sur une demi-journée de cours](#affectations-denseignant-à-une-classe-sur-une-demi-journée-de-cours)
+* des [demi-journées d'indisponibilités d'enseignants](#indisponibilités-denseignants)
+* des [affectations d'enseignant à une classe](#affectations-des-enseignants-à-une-classe)
+* des [affectations d'enseignant à une classe sur une demi-journée de cours](#affectations-des-enseignants-à-une-classe-sur-une-demi-journée)
 
 À noter que certains objets-métier sont également des utilisateurs de l'application. Tout est question de point de vue : un enseignant est un utilisateur de l'application pour lui-même et pour l'administrateur, mais il est un objet-métier pour le planificateur.
 
@@ -117,10 +118,11 @@ L'application prévoit aujourd'hui trois rôles :
 * `administrateur` : créer, modifier, suspend, supprimer les utilisateurs,
 * `planificateur` : créer, modifie, supprime, met à jour, lie les classes d'élèves, les enseignants, les années scolaires, les semaines d'enseignement, les demi-journée de cours, les deux types d'affectations,
 * `enseignant` : crée et supprime ses indisponibilités.
- 
+
 Un utilisateur _doit pouvoir cumuler_ les rôles si nécessaire.
 
 ## Encodage de caractères
+
 Le code source comme le HTML produit par l'application devront utiliser l'encodage de caractères UTF-8.
 
 ## Organisation et communication
@@ -166,7 +168,6 @@ Voici quelques détails techniques concernant cette plateforme :
 * PHP 5.3.5
 * extensions à PHP : mysqli
 
-
 ## Sécurité
 
 ### Cryptage des communications
@@ -211,6 +212,7 @@ Le prestataire devra produire une documentation complète comportant plusieurs v
 Cette documentation devra être rédigée en HTML et des liens jusdicieusement placés dans l'application permettront de la consulter ponctuellement en fonction du contexte dans une fenêtre externe à l'application, mais en ouvrant une nouvelle fenêtre que si plus aucune fenêtre destinée à consulter la documentation n'est ouverte.
 
 ### Documentation Administrateur
+
 Cette documentation comprendra une procédure décrivant la migration permettant de passer de la méthode de cryptage de mots de passe dépréciée à la méthode recommandée.
 
 ## Fonctionnalités de l'application
@@ -252,7 +254,9 @@ L'administrateur a accès à la liste de tous les utilisateurs de l'application.
 Il s'agit de la page par défaut d'un administrateur une fois qu'il est connecté.
 
 #### Création d'utilisateur(s)
+
 La création d'un utilisateur s'effectue à l'aide d'un formulaire comprenant les champs suivants :
+
 * Nom d'utilisateur
 * Adresse email
 * Prénom
@@ -298,6 +302,7 @@ La liste des utilisateurs doit permettre d'exécuter une même action sur plusie
 Lorsqu'un utilisateur est à la fois Admnistrateur et Planificateur, le prestataire veillera à ce que des fonctionnalités proches soient regroupées sur la même page.
 
 Le Planificateur gère l'ensemble des tâches relatives à la planification :
+
 * gestion des classes d'élèves
 * gestion des matières enseignées
 * gestion des enseignants
@@ -341,30 +346,31 @@ Lorsque le Planificateur clique sur une semaine, il accède à un tableau permet
 
 Un bouton, appeler "Enregistrer" permet d'enregistrer les modifications sans autre action. Un autre bouton appelé "Finaliser" permet d'enregistrer les modifications, d'envoyer un mail de notification aux enseignants concernés et de rendre cette semaine de planifcation consultable par les enseignants.
 
-**Une semaine de planification n'est _pas consultable_ par les enseignants tant qu'elle n'a pas été finalisée !**
+__Une semaine de planification n'est _pas consultable_ par les enseignants tant qu'elle n'a pas été finalisée !__
 
 ### Fonctionnalités du rôle Enseignant
 
 #### Indication des indisponibilités
 
-Pour chaque année scolaire active, un enseignant peut accéder à un tableau similaire [à celui auquel accès le Planificateur](#Gestion-des-années-scolaires) dans lequel il a la possiblité d'[indiquer ses indisponibilités](https://github.com/Royoyo/ProjetSio/issues/12) : une case cochée correspondant à une **demi**-journée d'indiponibilité.
+Pour chaque année scolaire active, un enseignant peut accéder à un tableau similaire [à celui auquel accès le Planificateur](#années-scolaires) dans lequel il a la possiblité d'[indiquer ses indisponibilités](https://github.com/Royoyo/ProjetSio/issues/12) : une case cochée correspondant à une __demi__-journée d'indiponibilité.
 
 Si l'enseignant indiquait une indisponibilité de cours sur une date pour laquelle il a déjà un cours de planifié, un avertissement sera affiché et un mail envoyé aux planificateurs ainsi qu'à l'enseignant pour prévenir du conflit.
 
-**Un tel conflit devra être mis en évidence sur les écrans pertinents de façon à ce que les utilisateurs de l'application ne puissent l'ignorer.**
+__Un tel conflit devra être mis en évidence sur les écrans pertinents de façon à ce que les utilisateurs de l'application ne puissent l'ignorer.__
 
 #### Consultation de sa planification
 
 L'enseignant a la possibilité de prendre connaissance de sa planification (par défaut, uniquement la semaine en cours et les semaines à venir) des cours pour lesquels il est planifié à travers un tableau récapitulatif :
+
 * une ligne par semaine
 * colone 1: numéro de la semaine
 * colone 2: date de début et de fin de la semaine
 * colone 3: premier cours (jour, heures de début et de fin, classe, matière)
 * colone 4: deuxième cours (idem)
 * colone 5: et ainsi de suite tant qu'il y en a
- 
+
 #### Consultation des semaines planifiées
 
 Pour chaque semaine finalisée d'une classe à laquelle l'enseignant est affecté, l'enseignant a la possibilité de consulter la planification de la classe.
 
-Fichier original : https://github.com/Royoyo/ProjetSio/tree/gh-pages/Cahier%20des%20charges
+Fichier original : `https://github.com/Royoyo/ProjetSio/tree/gh-pages/Cahier%20des%20charges`
