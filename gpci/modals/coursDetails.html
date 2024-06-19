@@ -19,6 +19,17 @@
                 </label>
             </div>
             <span class="text-danger" ng-show="cours.classes.length==0">Veuillez préciser au moins une classe.</span>
+            <div class="form-group">
+                <label>Salles</label>
+                <select
+                    class="form-control"
+                    name="nom"
+                    ng-model="cours.id_Salles"
+                    ng-options="salle.id as salle.nom for salle in salles"
+                    required
+                ></select>
+                <span class="text-danger" ng-show="form.nom.$error.required">Veuillez préciser au moins une classe.</span>
+            </div>
         </div>
         <div class="form-group">
             <div class="col-sm-offset-2">
