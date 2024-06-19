@@ -27,6 +27,8 @@ includeJs('scripts/controllers/planification/enseignants/enseignants.js');
 includeJs('scripts/controllers/planification/enseignants/enseignantsMatieres.js');
 includeJs('scripts/controllers/planification/matieres/matieres.js');
 includeJs('scripts/controllers/planification/matieres/matieresDetails.js');
+includeJs('scripts/controllers/planification/salles/salles.js');
+includeJs('scripts/controllers/planification/salles/sallesDetails.js');
 includeJs('scripts/controllers/public/annee.js');
 includeJs('scripts/filters/unique.js');
 includeJs('scripts/services/activation.js');
@@ -49,6 +51,7 @@ includeJs('scripts/services/planification/classes.js');
 includeJs('scripts/services/planification/cours.js');
 includeJs('scripts/services/planification/enseignants.js');
 includeJs('scripts/services/planification/matieres.js');
+includeJs('scripts/services/planification/salles.js');
 includeJs('scripts/services/public/week.js');
 
 
