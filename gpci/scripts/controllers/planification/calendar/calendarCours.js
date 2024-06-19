@@ -1,12 +1,12 @@
 webApp.controller("CoursDetails",
-	function($scope, $uibModalInstance, helper, coursService, enseignantsService, matieresService, classesService, event){
+	function($scope, $uibModalInstance, helper, coursService, enseignantsService, matieresService, classesService, sallesService, event){
 
         $scope.matieres = [];
+        $scope.salles = [];
         $scope.enseignantsBase = [];
         $scope.enseignants = [];
         $scope.classes = [];
         $scope.formClasses = {};
-
         
 
         matieresService.getList().then(function (data) {
@@ -15,7 +15,11 @@ webApp.controller("CoursDetails",
 
 	    classesService.getList().then(function (data) {
 	        $scope.classes = data;
-	    });	    
+	    });	 
+        
+        sallesService.getList().then(function (data) {
+	        $scope.salles = data;
+	    });
 
         $scope.creation = event.title ? false : true;
         
@@ -48,8 +52,6 @@ webApp.controller("CoursDetails",
             });
         }
         
-        
-                
         function listeners(){
             $scope.$watch(function(){
                 return $scope.cours.id_Matieres;
@@ -109,6 +111,7 @@ webApp.controller("CoursDetails",
         $scope.save = function () {
             $scope.cours.toDelete = false;
             $uibModalInstance.close($scope.cours);
+            console.log($scope.cours.id_Salles);
 		};
 		
         $scope.delete = function () {
