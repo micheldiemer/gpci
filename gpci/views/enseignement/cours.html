@@ -20,6 +20,7 @@
 				<th st-sort="periode">Periode</th>
                 <th st-sort="matiere.nom">Matière</th>
                 <th st-sort="classes">Classes</th>
+				<th st-sort="salles">Salles</th>
 			</tr>
 			<tr>
 				<th>
@@ -34,6 +35,9 @@
                 <th>
 					<input st-search="classes.nom" placeholder="recherche classes" class="input-sm form-control" type="search"/>
 				</th>
+				<th>
+					<input st-search="salle.nom" placeholder="recherche salles" class="input-sm form-control" type="search"/>
+				</th>
 			</tr>
 		</thead>
 	    <tbody>
@@ -42,7 +46,8 @@
 	        <td>{{ cour.periode }}</td>
 	        <td>{{ cour.matiere.nom }}</td>
 	        <td><span data-ng-repeat="classe in cour.classes"> {{ classe.nom }}{{$last ? '' : ' / '}} </span></td>
-	    </tr>
+			<td>{{ cour.salle.nom }}</td>
+		</tr>
 	    </tbody>
 	    <tfoot>
             <tr>
