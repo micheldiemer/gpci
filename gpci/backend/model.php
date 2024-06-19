@@ -115,6 +115,10 @@ class Cours extends Model {
     public function matiere() {
         return $this->belongsTo('Matieres', 'id_Matieres');
     }
+    
+    public function salle() {
+        return $this->belongsTo('Salles', 'id_Salles');
+    }
 
     public function classes() {
         return $this->belongsToMany('Classes', 'cours_classes', 'id_Cours', 'id_Classes')->select('id', 'nom');
@@ -134,5 +138,9 @@ class Roles extends Model {
     public function user() {
         return $this->belongsToMany('Users', 'users_matieres', 'id_Roles', 'id_Users');
     }
+}
+
+class Salles extends Model {
+    public $timestamps = false;
 }
 ?>

@@ -37,7 +37,7 @@ $app->get('/plan/cours/assignation', $authenticateWithRole('planificateur'), fun
 $app->get('/plan/cours/', $authenticateWithRole('planificateur'),  function () use ($app) {
     $start = $_GET['start'];
     $end = $_GET['end'];
-    $cours_obj = Cours::with('user', 'matiere', 'classes')->where(function($q) use($start) {
+    $cours_obj = Cours::with('user', 'matiere', 'classes','salle')->where(function($q) use($start) {
         $q->where('start', '>=', $start);
     })->where(function($q) use($end) {
         $q->where('start', '<=', $end);
@@ -47,7 +47,7 @@ $app->get('/plan/cours/', $authenticateWithRole('planificateur'),  function () u
 });
 
 $app->get('/plan/cours/:id', $authenticateWithRole('planificateur'), function ($id) use ($app) {
-    $cours_obj = Cours::with('user', 'matiere', 'classes')->where('id', $id)->firstOrFail();
+    $cours_obj = Cours::with('user', 'matiere', 'classes','salle')->where('id', $id)->firstOrFail();
     $app->response->headers->set('Content-Type', 'application/json');
     $app->response->setBody(json_encode($cours_obj));
 });
@@ -66,11 +66,12 @@ $app->post('/plan/cours/', $authenticateWithRole('enseignant'), function () use 
     try{
         $json = $app->request->getBody();
         $data = json_decode($json, true);
-
+        
         $cours = new Cours;
         $cours->start = $data['start'];
         $cours->end = $data['end'];
         $cours->id_Matieres = $data['id_Matieres'];
+        $cours->id_Salles = $data['id_Salles'];
         $cours_user = [];
         $indispo = [];
         if (!empty($data['id_Users'])){
@@ -113,6 +114,7 @@ $app->put('/plan/cours/:id', $authenticateWithRole('planificateur'), function ($
 		$cours->start = $data['start'];
         $cours->end = $data['end'];
         $cours->id_Matieres = $data['id_Matieres'];
+        $cours->id_Salles = $data['id_Salles'];
         $cours_user = [];
         $indispo = [];
 		
@@ -153,7 +155,7 @@ function saveCours($cours, $classes){
 
 $app->delete('/plan/cours/:id', $authenticateWithRole('planificateur'),  function ($id) use ($app, $mailer) {
     try {
-        $cours = Cours::with('user', 'matiere', 'classes')->where('id', $id)->firstOrFail();
+        $cours = Cours::with('user', 'matiere', 'classes', 'salle')->where('id', $id)->firstOrFail();
 		if ($cours->assignationSent == 1){
 			mailAnnulationCours($cours, $mailer);
 		}
@@ -339,6 +341,62 @@ $app->delete('/plan/classe/:id', $authenticateWithRole('planificateur'), functio
             $app->response->setBody(json_encode(array("message"=>"Vous ne pouvez pas supprimer une classe avec des cours!")));
             $app->response->setStatus(400);
         }
+		
+    } catch(Exception $e) {
+      $app->response->headers->set('Content-Type', 'application/json');
+      $app->response->setStatus(400);
+      $app->response->setBody($e);
+    }
+});
+
+// Salles
+
+$app->get('/plan/salle', $authenticateWithRole('planificateur'), function() use ($app) {
+    $salles = Salles::all();
+    $app->response->headers->set('Content-Type', 'application/json');
+    $app->response->setBody($salles->toJson());
+});
+
+$app->get('/plan/salle/:id', $authenticateWithRole('planificateur'), function($id) use ($app) {
+    $salle = Salles::where("id",$id)->first();
+    $app->response->headers->set('Content-Type', 'application/json');
+    $app->response->setBody($salle->toJson());
+});
+
+$app->post('/plan/salle', $authenticateWithRole('planificateur'), function() use ($app) {
+    try{
+        $json = $app->request->getBody();
+        $data = json_decode($json, true);
+
+        $salle = new Salles;
+        $salle->nom = $data['nom'];
+        $salle->save();
+    } catch(Exception $e) {
+        $app->response->headers->set('Content-Type', 'application/json');
+		$app->response->setStatus(400);
+        $app->response->setBody($e);
+    }
+});
+
+$app->put('/plan/salle/:id', $authenticateWithRole('planificateur'), function($id) use ($app) {
+    try{
+        $salle = Salles::where('id', $id)->firstOrFail();
+        $json = $app->request->getBody();
+        $data = json_decode($json, true);
+
+        $salle->nom = $data['nom'];
+        $salle->save();
+        $app->response->setBody(true);
+    } catch(Exception $e) {
+        $app->response->headers->set('Content-Type', 'application/json');
+		$app->response->setStatus(400);
+        $app->response->setBody($e);
+    }
+});
+
+$app->delete('/plan/salle/:id', $authenticateWithRole('planificateur'), function($id) use ($app) {
+    try{
+        salles::find($id)->delete();
 		
     } catch(Exception $e) {
       $app->response->headers->set('Content-Type', 'application/json');
