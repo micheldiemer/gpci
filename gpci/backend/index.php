@@ -28,12 +28,6 @@ require_once 'profil.php';
 require_once 'icalGenerator.php';
 require_once 'public.php';
 
-$app->get('/mailtest', function() use ($app, $mailer) {
-	mailTest($mailer);
-    $app->response->headers->set('Content-Type', 'application/json');
-    $app->response->setBody(json_encode('mailTest'));
-});
-
 $app->get('/roles', $authenticateWithRole('administrateur'), function () use ($app) {
 
     $roles = Roles::get();

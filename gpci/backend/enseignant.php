@@ -13,7 +13,7 @@
  
 //Cours
 $app->get('/ens/cours', $authenticateWithRole('enseignant'),  function () use ($app) {
-    $cours_obj = Cours::with('user', 'matiere', 'classes')->whereRaw('DATE(start) >= CURDATE() and id_Users = ? and assignationSent = 1',[$_SESSION['id']])->get();
+    $cours_obj = Cours::with('user', 'matiere', 'classes', 'salle')->whereRaw('DATE(start) >= CURDATE() and id_Users = ? and assignationSent = 1',[$_SESSION['id']])->get();
     $app->response->headers->set('Content-Type', 'application/json');
     $app->response->setBody(json_encode($cours_obj));
 });
