@@ -52,6 +52,18 @@ CREATE TABLE IF NOT EXISTS `cours` (
 -- --------------------------------------------------------
 
 --
+-- Structure de la table `salles`
+--
+
+CREATE TABLE IF NOT EXISTS `salles` (
+  `nom` varchar(25) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=17 ;
+
+-- --------------------------------------------------------
+
+--
 -- Structure de la table `cours_classes`
 --
 
