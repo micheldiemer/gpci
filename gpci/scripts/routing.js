@@ -89,6 +89,14 @@ webApp.config(function($stateProvider, $urlRouterProvider, RestangularProvider, 
                 authorizedRoles: [USERS_ROLES.planificateur]
             }
         })
+        .state("planification.salles", {
+            url: "/salles",
+            templateUrl: "views/planification/salles.html",
+            controller: "PlanSallesController",
+            data: {
+                authorizedRoles: [USERS_ROLES.planificateur]
+            }
+        })
         .state("planification.enseignants", {
             url: "/enseignants",
             templateUrl: "views/planification/listeEnseignants.html",
