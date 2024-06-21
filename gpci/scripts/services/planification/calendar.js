@@ -11,6 +11,7 @@ webApp.factory("planCalendarService",
                 if (element.hasClass("coursEvent")) {
                     element.find(".fc-content").append("<p>" + event.enseignant + "</p>");
                     element.find(".fc-content").append("<p>" + event.classes + "</p>");
+                    element.find(".fc-content").append("<p>" + event.salle + "</p>");
                 }
             } else {
                 if (element.hasClass("coursContainer")) {
@@ -96,7 +97,7 @@ webApp.factory("planCalendarService",
         //Données du calendrier
 
         var events = {
-            url: "/gpci/backend/plan/cours",
+            url: "/backend/plan/cours",
             color: "green",
             className: "coursEvent",
             eventDataTransform: function(rawEventData) {
@@ -107,11 +108,12 @@ webApp.factory("planCalendarService",
                     classes: printClasses(rawEventData.classes),
                     start: rawEventData.start,
                     end: rawEventData.end,
-                    assignationSent: rawEventData.assignationSent
-            };
+                    assignationSent: rawEventData.assignationSent,
+                    salle: rawEventData.salle.nom,
+                };
             }
         };
-        
+
         function printClasses(classes) {
             var result = "";
             classes.forEach(function(classe) {

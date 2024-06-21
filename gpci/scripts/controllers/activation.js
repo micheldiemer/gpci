@@ -1,4 +1,4 @@
-webApp.controller("ActivationController",
+﻿webApp.controller("ActivationController",
 	function($scope, serviceActivation, id, token) {
     
     $scope.user = {};

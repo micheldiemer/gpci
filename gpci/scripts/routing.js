@@ -2,7 +2,7 @@
 webApp.config(function($stateProvider, $urlRouterProvider, RestangularProvider, USERS_ROLES) {
 
 //Mise en place de l'url de base pour restangular
-    RestangularProvider.setBaseUrl("http://10.0.0.9/gpci/backend");
+    RestangularProvider.setBaseUrl("http://192.168.1.162:8080/backend");
 
 
 //Cette ligne force toute les routes autres que celles déclarées vers "/"
