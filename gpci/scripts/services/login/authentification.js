@@ -1,4 +1,4 @@
-webApp.factory("Authentification",function($rootScope, $window, Session, AUTH_EVENTS, Restangular) {
+﻿webApp.factory("Authentification",function($rootScope, $window, Session, AUTH_EVENTS, Restangular) {
 	var authService = {};		
 	
 	//la fonction login

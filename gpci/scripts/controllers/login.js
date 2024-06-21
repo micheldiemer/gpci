@@ -1,4 +1,4 @@
-//Dans ce fichier on va mettre en place les différents controllers qui seront liés à la view
+﻿//Dans ce fichier on va mettre en place les différents controllers qui seront liés à la view
 // Il faut voir ça comme des sections de codes seulement accessibles dans la zone html où elles sont déclarées
 
 // Un paramètre qui reviendra constamment est $scope, il faut le voir comme un "sac à variables" que l'on va

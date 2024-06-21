@@ -7,6 +7,7 @@ webApp.factory("coursService",
 	            Restangular.one("plan/cours", id).get().then(function (data) {
 	                data.id_Users = Number(data.id_Users);
 	                data.id_Matieres = Number(data.id_Matieres);
+					data.id_Salles = Number(data.id_Salles);
 	                //TO DO SUCCESS TOASTR
 	                resolve(data);
 	            }, function() {

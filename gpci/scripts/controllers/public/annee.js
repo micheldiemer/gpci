@@ -1,4 +1,4 @@
-webApp.controller("PlanAnneeController",
+﻿webApp.controller("PlanAnneeController",
 	function ($scope, $uibModal, $http, classesService, weekService) {
 	    $scope.current_classes = [];
 	    $scope.next_classes = [];
@@ -28,14 +28,14 @@ webApp.controller("PlanAnneeController",
 
 	    $http({
 	        method: 'GET',
-	        url: '/gpci/backend/plan/years/current'
+	        url: '/backend/plan/years/current'
 	    }).then(function successCallback(response) {
 	        $scope.year = response.data.year;
 	    }, function errorCallback(response) {
 	    });
 	    $http({
 	        method: 'GET',
-	        url: '/gpci/backend/plan/years/next'
+	        url: '/backend/plan/years/next'
 	    }).then(function successCallback(response) {
 	        $scope.nextyear = response.data.year;
 	    }, function errorCallback(response) {

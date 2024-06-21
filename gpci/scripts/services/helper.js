@@ -1,4 +1,4 @@
-webApp.factory("helper", function () {
+﻿webApp.factory("helper", function () {
     return {
 
         //Permet de récupérer l'objet d'un array par son id en indiquant le nom de la propriété par laquelle
