@@ -4,6 +4,7 @@
     "illuminate/database": "*",
     "slim/views": "*",
     "swiftmailer/swiftmailer": "^5.4",
-    "dompdf/dompdf": "0.7.x@beta"
+    "dompdf/dompdf": "0.7.x@beta",
+    "fakerphp/faker": "^1.9"
   }
 }
