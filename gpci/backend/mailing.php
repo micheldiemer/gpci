@@ -123,5 +123,5 @@ function mailAnnulationCours($cours, $mailer){
     // envoie
     $results = $mailer->send($message);
 }
-
+	
 ?>
