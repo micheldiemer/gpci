@@ -169,7 +169,7 @@ $app->delete('/plan/cours/:id', $authenticateWithRole('planificateur'),  functio
 
 //Matières
 $app->get('/plan/matiere', $authenticateWithRole('planificateur'), function() use ($app) {
-    $matiere = Matieres::with('user')->get();
+    $matiere = Matieres::with('user')->orderBy('nom')->get();
     $app->response->headers->set('Content-Type', 'application/json');
     $app->response->setBody($matiere->toJson());
 });
@@ -237,6 +237,7 @@ $app->get('/plan/enseignant', $authenticateWithRole('planificateur'), function()
 	->where("enabled",1)
 	->with('matieres', 'indisponibilite', 'cours')
 	->select('id','firstName','lastName')
+        ->orderBy('lastName')
 	->get();
     $app->response->headers->set('Content-Type', 'application/json');
     $app->response->setBody($users->toJson());
