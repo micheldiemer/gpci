@@ -4,6 +4,7 @@ use Dompdf\Dompdf;
 
 $app->get('/semaine/:year/:week/:classe', function ($year, $week, $classe) use ($app) {
     $dompdf = new Dompdf();
+    $dompdf->setPaper('A4', 'landscape');
     $classe = Classes::where('id', $classe)->firstOrFail();
     $date = getDateList($week, $year);
     $cours_am = array();
