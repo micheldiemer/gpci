@@ -21,7 +21,7 @@ gulp.task("injectScripts", function() {
 gulp.task("webApp", function () {
   //Partie webApp
   gulp.src('./gpci/scripts/**/*.js')
-    .pipe(uglify(concat('app.js')))
+    .pipe(uglify(concat('app.js').on('error', console.error)))
     .pipe(gulp.dest('./production/webApp'));
   gulp.src('./gpci/views/**/*.html')
     .pipe(gulp.dest('./production/webApp/app/views/'));
@@ -57,3 +57,4 @@ gulp.task('electronApp', function () {
   gulp.src('./gpci/css/**/*.css')
     .pipe(gulp.dest('./production/electronApp/css'));
 });
+
