@@ -3,34 +3,48 @@
 use Dompdf\Dompdf;
 
 $app->get('/semaine/:year/:week/:classe', function ($year, $week, $classe) use ($app) {
-    $dompdf = new Dompdf();
-    $dompdf->setPaper('A4', 'landscape');
+    $uploadedFiles = $_FILES;
+    $directory = __DIR__ . '/uploads';
     $classe = Classes::where('id', $classe)->firstOrFail();
-    $date = getDateList($week, $year);
-    $cours_am = array();
-    $cours_pm = array();
-    $count = 0;
-    foreach ($date as $day) {
-        $cours_am[$count] = Cours::with('user', 'matiere')->whereRaw('(start >= ? AND end <= ?) and assignationSent = 1', [$day . " 08:00:00", $day . " 12:15:00"])->whereHas('classes', function($q) use($classe) {
-            $q->where('id', $classe['id']);
-        })->first();
-        $cours_pm[$count] = Cours::with('user', 'matiere')->whereRaw('(start >= ? AND end <= ?) and assignationSent = 1', [$day . " 13:15:00", $day . " 17:30:00"])->whereHas('classes', function($q) use($classe) {
-            $q->where('id', $classe['id']);
-        })->first();
-        $count += 1;
-    }
-    $date_name = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi'];
-    $template = "templates/week.php";
-    ob_start();
-    include $template;
-    $template = ob_get_clean();
-    $dompdf->loadHtml($template);
 
-    // Render the HTML as PDF
-    $dompdf->render();
+    $filename = $directory."/".htmlspecialchars($year)."-".htmlspecialchars($week)."-".htmlspecialchars($classe->nom).".pdf";
+    // Handle single file upload
+    if (file_exists($filename)) {
+        $data = file_get_contents($filename);
+        header("Content-type: application/octet-stream");
+        header("Content-disposition: attachment;filename=".htmlspecialchars($classe->nom)."_semaine_".htmlspecialchars($week).".pdf");
+        echo $data;
+        return;
+    } else {
+        $dompdf = new Dompdf();
+        $dompdf->setPaper('A4', 'landscape');
+        $date = getDateList($week, $year);
+        $cours_am = array();
+        $cours_pm = array();
+        $count = 0;
+        foreach ($date as $day) {
+            $cours_am[$count] = Cours::with('user', 'matiere')->whereRaw('(start >= ? AND end <= ?) and assignationSent = 1', [$day . " 08:00:00", $day . " 12:15:00"])->whereHas('classes', function($q) use($classe) {
+                $q->where('id', $classe['id']);
+            })->first();
+            $cours_pm[$count] = Cours::with('user', 'matiere')->whereRaw('(start >= ? AND end <= ?) and assignationSent = 1', [$day . " 13:15:00", $day . " 17:30:00"])->whereHas('classes', function($q) use($classe) {
+                $q->where('id', $classe['id']);
+            })->first();
+            $count += 1;
+        }
+        $date_name = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi'];
+        $template = "templates/week.php";
+        ob_start();
+        include $template;
+        $template = ob_get_clean();
+        $dompdf->loadHtml($template);
 
-    // Output the generated PDF to Browser
-    $dompdf->stream($classe->nom . "_semaine_" . $week);
+        // Render the HTML as PDF
+        $dompdf->render();
+
+        // Output the generated PDF to Browser
+        $dompdf->stream($classe->nom . "_semaine_" . $week);
+        return;
+        }
 });
 
 $app->get('/plan/years/:current_next', function($current_next) use ($app) {
