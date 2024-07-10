@@ -1,5 +1,6 @@
 
 -- création d'un nouvel utilisateur superadmin
+delete from users where login = 'superadmin';
 insert into users (login, password, firstName, lastName,
                    email, token, enabled, connected)
 values ('superadmin','','admin','admin',
@@ -9,7 +10,7 @@ values ('superadmin','','admin','admin',
 --  ici le mot de passe est adminXxx123#
 update users
    set hash = 'EDAGZRYZERDX'
-       , password =  sha1(concat('EDAGZRYZERDX'),sha1('adminXxx123#'))
+       , password =  sha1(concat('EDAGZRYZERDX',sha1('adminXxx123#')))
  where login = 'superadmin';
 
 --  récupération de l'id du superadmin
