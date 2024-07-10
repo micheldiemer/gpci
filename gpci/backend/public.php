@@ -23,12 +23,20 @@ $app->get('/semaine/:year/:week/:classe', function ($year, $week, $classe) use (
         $cours_pm = array();
         $count = 0;
         foreach ($date as $day) {
-            $cours_am[$count] = Cours::with('user', 'matiere')->whereRaw('(start >= ? AND end <= ?) and assignationSent = 1', [$day . " 08:00:00", $day . " 12:15:00"])->whereHas('classes', function($q) use($classe) {
+            $cours_am[$count] = Cours::with('user', 'matiere')->whereRaw('(start >= ? AND end <= ?) and assignationSent = 1', [$day . " 08:00:00", $day . " 12:00:00"])->whereHas('classes', function($q) use($classe) {
                 $q->where('id', $classe['id']);
             })->first();
-            $cours_pm[$count] = Cours::with('user', 'matiere')->whereRaw('(start >= ? AND end <= ?) and assignationSent = 1', [$day . " 13:15:00", $day . " 17:30:00"])->whereHas('classes', function($q) use($classe) {
+            $cours_pm[$count] = Cours::with('user', 'matiere')->whereRaw('(start >= ? AND end <= ?) and assignationSent = 1', [$day . " 13:00:00", $day . " 17:00:00"])->whereHas('classes', function($q) use($classe) {
                 $q->where('id', $classe['id']);
             })->first();
+
+        // cours / salle non renseignée : valeur par défaut id=0 nom=''
+        if(isset($cours_am[$count]) && !(isset($cours_am[$count]->salle))) {
+            $cours_am[$count]->salle = (object)array('id' => 0,'nom' => '');
+        }
+        if(isset($cours_pm[$count]) && !(isset($cours_pm[$count]->salle))) {
+            $cours_pm[$count]->salle = (object)array('id' => 0,'nom' => '');
+        }
             $count += 1;
         }
         $date_name = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi'];
