@@ -110,3 +110,39 @@ $app->get('/plan/current_next_classe/:current_next', function($current_next) use
     $app->response->headers->set('Content-Type', 'application/json');
     $app->response->setBody($classes->toJson());
 });
+
+//Lien Ical public pour les applications calendriers des professeurs
+$app->get('/ical/classe/:classeId',  function ($classeId) use ($app) {
+	try {
+        $cours = Classes::where('id', $classeId)->with('cours')->get();     
+        $events = [];
+
+		$i = 0;
+		foreach($cours[0]['cours'] as $cour){
+            $courDetail = Cours::where('id', $cour->id)->with('matiere', 'salle')->get();
+			$start = new dateTime($cour->start);
+			$end = new dateTime($cour->end);
+            
+			$eventParams = array(
+				'start' => $start,
+				'end' => $end,
+				'summary' => 'Cours ' . ' de ' . $courDetail[0]->matiere->nom . ' - ' . $courDetail[0]->salle->nom);
+            
+
+			$events[$i] = new CalendarEvent($eventParams);
+			$i++;
+		}
+
+		$calParams= array(
+			'events' => $events
+			);
+
+		$calendar = new Calendar($calParams);
+                $app->response->headers->set('Content-Type', 'text/calendar; charset=utf-8');
+		$calendar->generateDownload();
+
+	} catch(Exception $e) {
+		$app->response->setStatus(400);
+		$app->response->setBody($e);
+	}
+});
