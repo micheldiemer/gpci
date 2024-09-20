@@ -2,7 +2,7 @@
 webApp.config(function($stateProvider, $urlRouterProvider, RestangularProvider, USERS_ROLES) {
 
 //Mise en place de l'url de base pour restangular
-    RestangularProvider.setBaseUrl("http://192.168.1.162:8080/backend");
+    RestangularProvider.setBaseUrl("http://192.168.1.162/gpci/backend");
 
 
 //Cette ligne force toute les routes autres que celles déclarées vers "/"
@@ -114,6 +114,15 @@ webApp.config(function($stateProvider, $urlRouterProvider, RestangularProvider, 
                     return $stateParams.id;
                 }
             },
+            data: {
+                authorizedRoles: [USERS_ROLES.planificateur]
+            }
+        })
+
+        .state("planification.annee", {
+            url: "/annee",
+            templateUrl: "views/planification/annee.html",
+            controller: "PlanAnnee",
             data: {
                 authorizedRoles: [USERS_ROLES.planificateur]
             }

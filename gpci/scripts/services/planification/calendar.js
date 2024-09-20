@@ -97,7 +97,7 @@ webApp.factory("planCalendarService",
         //Données du calendrier
 
         var events = {
-            url: "/backend/plan/cours",
+            url: "backend/plan/cours",
             color: "green",
             className: "coursEvent",
             eventDataTransform: function(rawEventData) {

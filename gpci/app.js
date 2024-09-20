@@ -21,6 +21,8 @@ includeJs('scripts/controllers/enseignement/periodeModal.js');
 includeJs('scripts/controllers/planification/planification.js');
 includeJs('scripts/controllers/planification/calendar/calendar.js');
 includeJs('scripts/controllers/planification/calendar/calendarCours.js');
+includeJs('scripts/controllers/planification/calendar/annee.js');
+includeJs('scripts/controllers/planification/calendar/anneeDetails.js');
 includeJs('scripts/controllers/planification/classes/classes.js');
 includeJs('scripts/controllers/planification/classes/classesDetails.js');
 includeJs('scripts/controllers/planification/enseignants/enseignants.js');

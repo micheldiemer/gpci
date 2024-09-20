@@ -28,10 +28,10 @@ CREATE TABLE IF NOT EXISTS `salles` (
 --
 INSERT INTO salles (id, nom) VALUES (1, "Salle 1");
 INSERT INTO salles (id, nom) VALUES (2, "Salle 2");
-INSERT INTO salles (id, nom) VALUES (3, "Salle 3");
+INSERT INTO salles (id, nom) VALUES (3, "Salle 3 - Informatique");
 INSERT INTO salles (id, nom) VALUES (4, "Salle 4");
 INSERT INTO salles (id, nom) VALUES (5, "Salle 5");
-INSERT INTO salles (id, nom) VALUES (6, "Salle 6");
+INSERT INTO salles (id, nom) VALUES (6, "Salle 6 - Réunion");
 INSERT INTO salles (id, nom) VALUES (7, "Salle 7");
 INSERT INTO salles (id, nom) VALUES (8, "Salle 8");
 INSERT INTO salles (id, nom) VALUES (9, "Bureau Direction");

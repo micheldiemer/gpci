@@ -28,14 +28,14 @@
 
 	    $http({
 	        method: 'GET',
-	        url: '/backend/plan/years/current'
+	        url: 'backend/plan/years/current'
 	    }).then(function successCallback(response) {
 	        $scope.year = response.data.year;
 	    }, function errorCallback(response) {
 	    });
 	    $http({
 	        method: 'GET',
-	        url: '/backend/plan/years/next'
+	        url: 'backend/plan/years/next'
 	    }).then(function successCallback(response) {
 	        $scope.nextyear = response.data.year;
 	    }, function errorCallback(response) {

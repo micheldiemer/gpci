@@ -3,33 +3,56 @@
 use Dompdf\Dompdf;
 
 $app->get('/semaine/:year/:week/:classe', function ($year, $week, $classe) use ($app) {
-    $dompdf = new Dompdf();
+    $uploadedFiles = $_FILES;
+    $directory = __DIR__ . '/uploads';
     $classe = Classes::where('id', $classe)->firstOrFail();
-    $date = getDateList($week, $year);
-    $cours_am = array();
-    $cours_pm = array();
-    $count = 0;
-    foreach ($date as $day) {
-        $cours_am[$count] = Cours::with('user', 'matiere')->whereRaw('(start >= ? AND end <= ?) and assignationSent = 1', [$day . " 08:00:00", $day . " 12:15:00"])->whereHas('classes', function($q) use($classe) {
-            $q->where('id', $classe['id']);
-        })->first();
-        $cours_pm[$count] = Cours::with('user', 'matiere')->whereRaw('(start >= ? AND end <= ?) and assignationSent = 1', [$day . " 13:15:00", $day . " 17:30:00"])->whereHas('classes', function($q) use($classe) {
-            $q->where('id', $classe['id']);
-        })->first();
-        $count += 1;
-    }
-    $date_name = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi'];
-    $template = "templates/week.php";
-    ob_start();
-    include $template;
-    $template = ob_get_clean();
-    $dompdf->loadHtml($template);
 
-    // Render the HTML as PDF
-    $dompdf->render();
+    $filename = $directory."/".htmlspecialchars($year)."-".htmlspecialchars($week)."-".htmlspecialchars($classe->nom).".pdf";
+    // Handle single file upload
+    if (file_exists($filename)) {
+        $data = file_get_contents($filename);
+        header("Content-type: application/octet-stream");
+        header("Content-disposition: attachment;filename=".htmlspecialchars($classe->nom)."_semaine_".htmlspecialchars($week).".pdf");
+        echo $data;
+        return;
+    } else {
+        $dompdf = new Dompdf();
+        $dompdf->setPaper('A4', 'landscape');
+        $date = getDateList($week, $year);
+        $cours_am = array();
+        $cours_pm = array();
+        $count = 0;
+        foreach ($date as $day) {
+            $cours_am[$count] = Cours::with('user', 'matiere')->whereRaw('(start >= ? AND end <= ?) and assignationSent = 1', [$day . " 08:00:00", $day . " 12:00:00"])->whereHas('classes', function($q) use($classe) {
+                $q->where('id', $classe['id']);
+            })->first();
+            $cours_pm[$count] = Cours::with('user', 'matiere')->whereRaw('(start >= ? AND end <= ?) and assignationSent = 1', [$day . " 13:00:00", $day . " 17:00:00"])->whereHas('classes', function($q) use($classe) {
+                $q->where('id', $classe['id']);
+            })->first();
 
-    // Output the generated PDF to Browser
-    $dompdf->stream($classe->nom . "_semaine_" . $week);
+        // cours / salle non renseignée : valeur par défaut id=0 nom=''
+        if(isset($cours_am[$count]) && !(isset($cours_am[$count]->salle))) {
+            $cours_am[$count]->salle = (object)array('id' => 0,'nom' => '');
+        }
+        if(isset($cours_pm[$count]) && !(isset($cours_pm[$count]->salle))) {
+            $cours_pm[$count]->salle = (object)array('id' => 0,'nom' => '');
+        }
+            $count += 1;
+        }
+        $date_name = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi'];
+        $template = "templates/week.php";
+        ob_start();
+        include $template;
+        $template = ob_get_clean();
+        $dompdf->loadHtml($template);
+
+        // Render the HTML as PDF
+        $dompdf->render();
+
+        // Output the generated PDF to Browser
+        $dompdf->stream($classe->nom . "_semaine_" . $week);
+        return;
+        }
 });
 
 $app->get('/plan/years/:current_next', function($current_next) use ($app) {
@@ -86,4 +109,40 @@ $app->get('/plan/current_next_classe/:current_next', function($current_next) use
     $classes = Classes::with('user')->whereRaw('(start >= ? and start <= ?) or (end >= ? and end <= ? )', [$date['start'], $date['end'], $date['start'], $date['end']])->get();
     $app->response->headers->set('Content-Type', 'application/json');
     $app->response->setBody($classes->toJson());
+});
+
+//Lien Ical public pour les applications calendriers des professeurs
+$app->get('/ical/classe/:classeId',  function ($classeId) use ($app) {
+	try {
+        $cours = Classes::where('id', $classeId)->with('cours')->get();     
+        $events = [];
+
+		$i = 0;
+		foreach($cours[0]['cours'] as $cour){
+            $courDetail = Cours::where('id', $cour->id)->with('matiere', 'salle')->get();
+			$start = new dateTime($cour->start);
+			$end = new dateTime($cour->end);
+            
+			$eventParams = array(
+				'start' => $start,
+				'end' => $end,
+				'summary' => 'Cours ' . ' de ' . $courDetail[0]->matiere->nom . ' - ' . $courDetail[0]->salle->nom);
+            
+
+			$events[$i] = new CalendarEvent($eventParams);
+			$i++;
+		}
+
+		$calParams= array(
+			'events' => $events
+			);
+
+		$calendar = new Calendar($calParams);
+                $app->response->headers->set('Content-Type', 'text/calendar; charset=utf-8');
+		$calendar->generateDownload();
+
+	} catch(Exception $e) {
+		$app->response->setStatus(400);
+		$app->response->setBody($e);
+	}
 });

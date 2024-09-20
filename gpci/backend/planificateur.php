@@ -405,3 +405,79 @@ $app->delete('/plan/salle/:id', $authenticateWithRole('planificateur'), function
       $app->response->setBody($e);
     }
 });
+
+$app->get('/upload/:year/:week/:classe', $authenticateWithRole('planificateur'), function ($year, $week, $classe) use ($app) {
+    $uploadedFiles = $_FILES;
+    $directory = __DIR__ . '/uploads';
+    $filename = $directory."/".$year."-".$week."-".$classe.".pdf";
+    // Handle single file upload
+    if (file_exists($filename)) {
+        $app->response->headers->set('Content-Type', 'application/json');
+        $app->response->setStatus(200);
+        $app->response->setBody(json_encode(['exists' => true, 'fileDirectory' => $year."-".$week."-".$classe.".pdf"]));
+        return;
+    } else {
+        $app->response->headers->set('Content-Type', 'application/json');
+        $app->response->setStatus(200);
+        $app->response->setBody(json_encode(['exists' => false, 'fileDirectory' => NULL]));
+        return;
+    }
+});
+
+$app->post('/upload/:year/:week/:classe', $authenticateWithRole('planificateur'), function ($year, $week, $classe) use ($app) {
+    $fileExt = explode('.', $_FILES['file']["tmp_name"]);
+    if (!array_pop($fileExt) == 'pdf') {
+        $app->response->headers->set('Content-Type', 'application/json');
+	    $app->response->setStatus(200);
+        $app->response->setBody(json_encode(['error' => 'Failed to upload file', 'msg' => "Format non autorisé"]));
+        return;
+    }
+    
+    
+    $uploadedFiles = $_FILES;
+    $directory = __DIR__ . '/uploads';
+    $filename = $directory."/".$year."-".$week."-".$classe.".pdf";
+    // Handle single file upload
+    $err = "test file";
+    if (isset($uploadedFiles['file'])) {
+        $uploadedFile = $uploadedFiles['file']["tmp_name"];
+        $err = "nom fichier $uploadedFile $filename";
+        if (move_uploaded_file($uploadedFile, $filename)) {
+            $app->response->headers->set('Content-Type', 'application/json');
+		    $app->response->setStatus(200);
+            $app->response->setBody(json_encode(['message' => 'File uploaded successfully']));
+            return;
+        }
+    }
+
+    $app->response->headers->set('Content-Type', 'application/json');
+	$app->response->setStatus(200);
+    $app->response->setBody(json_encode(['error' => 'Failed to upload file', 'msg' => $err]));
+    return;
+});
+
+$app->delete('/upload/:year/:week/:classe', $authenticateWithRole('planificateur'), function ($year, $week, $classe) use ($app) {
+    $uploadedFiles = $_FILES;
+    $directory = __DIR__ . '/uploads';
+    $filename = $directory."/".$year."-".$week."-".$classe.".pdf";
+
+    if (file_exists($filename)) {
+        if (unlink($filename)) {
+            $app->response->headers->set('Content-Type', 'application/json');
+            $app->response->setStatus(200);
+            $app->response->setBody(json_encode(['deleted' => true]));
+            return;
+        } else {
+            $app->response->headers->set('Content-Type', 'application/json');
+            $app->response->setStatus(200);
+            $app->response->setBody(json_encode(['exists' => false]));
+            return;
+        }
+        
+    } else {
+        $app->response->headers->set('Content-Type', 'application/json');
+        $app->response->setStatus(200);
+        $app->response->setBody(json_encode(['exists' => false]));
+        return;
+    }
+});

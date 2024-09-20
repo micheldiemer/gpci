@@ -1,4 +1,4 @@
-var webApp = angular.module("webApp", ["ui.router","ui.bootstrap","smart-table","ngAnimate","toastr","restangular","ui.calendar"]);
+var webApp = angular.module("webApp", ["ui.router", "ui.bootstrap", "smart-table", "ngAnimate", "toastr", "restangular", "ui.calendar"]);
 
 //TO DO : prendre ces constantes du serveur
 webApp.constant("USERS_ROLES", {
