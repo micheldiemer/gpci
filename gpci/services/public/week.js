@@ -1,5 +1,5 @@
 ﻿webApp.factory("weekService", function ($q, notifService, Restangular) {
-  var list = [];
+  let list = [];
 
   function updateList(year) {
     return $q(function (resolve, reject) {

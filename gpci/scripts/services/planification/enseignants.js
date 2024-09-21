@@ -1,5 +1,5 @@
 webApp.factory("enseignantsService", function ($q, notifService, Restangular) {
-  var list = [];
+  let list = [];
 
   function updateList() {
     return $q(function (resolve, reject) {

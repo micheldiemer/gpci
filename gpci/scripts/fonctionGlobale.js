@@ -2,7 +2,7 @@
 webApp.run(function ($rootScope, $state, Authentification, AUTH_EVENTS) {
   $rootScope.$on("$stateChangeStart", function (event, next) {
     if (next.name != "activation" || next.name != "annee") {
-      var authorizedRoles = next.data.authorizedRoles;
+      const authorizedRoles = next.data.authorizedRoles;
       if (!Authentification.isAuthorized(authorizedRoles)) {
         event.preventDefault();
         if (Authentification.isAuthenticated()) {
