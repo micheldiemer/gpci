@@ -16,5 +16,17 @@
     },
     "editor.tabSize": 4
   },
-  "prettier.tabWidth": 2
+  "prettier.tabWidth": 2,
+  "intelephense.environment.phpVersion": "8.3",
+  "intelephense.files.exclude": [
+    "**/.git/**",
+    "**/.svn/**",
+    "**/.hg/**",
+    "**/CVS/**",
+    "**/.DS_Store/**",
+    "**/node_modules/**",
+    "**/bower_components/**",
+    "**/vendor/**/{Tests,tests}/**",
+    "**/.history/**"
+  ]
 }
