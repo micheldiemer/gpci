@@ -94,7 +94,7 @@ webApp.factory(
     };
 
     /* Configuration du calendrier */
-    var config = {
+    const config = {
       calendar: {
         height: 540,
         editable: false,
@@ -146,7 +146,7 @@ webApp.factory(
     //Données du calendrier
 
     const events = {
-      url: "backend/plan/cours",
+      url: BASE_URL + "/plan/cours",
       color: "green",
       className: "coursEvent",
       eventDataTransform: function (rawEventData) {

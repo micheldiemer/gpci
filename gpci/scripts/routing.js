@@ -6,9 +6,9 @@ webApp.config(function (
   USERS_ROLES
 ) {
   //Mise en place de l'url de base pour restangular
-  RestangularProvider.setBaseUrl("https://dev.mshome.net/gpci/backend");
+  RestangularProvider.setBaseUrl(BASE_URL);
 
-  //Cette ligne force toute les routes autres que celles déclarées vers "/"
+  //Cette ligne force toute les routes autresq que celles déclarées vers "/"
   $urlRouterProvider.otherwise("/");
 
   // NOTA BENE : ui-router utilise la terminologie "state" à la place de "route", mais le principe de base reste le même

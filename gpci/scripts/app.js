@@ -1,3 +1,5 @@
+const BASE_URL = "https://dev.mshome.net/gpci/backend";
+
 const webApp = angular.module("webApp", [
   "ui.router",
   "ui.bootstrap",

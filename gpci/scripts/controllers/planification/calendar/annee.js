@@ -31,7 +31,7 @@ webApp.controller(
 
     $http({
       method: "GET",
-      url: "backend/plan/years/current",
+      url: BASE_URL + "/plan/years/current",
     }).then(
       function successCallback(response) {
         $scope.year = response.data.year;
@@ -41,7 +41,7 @@ webApp.controller(
 
     $http({
       method: "GET",
-      url: "backend/plan/years/next",
+      url: BASE_URL + "/plan/years/next",
     }).then(
       function successCallback(response) {
         $scope.nextyear = response.data.year;
@@ -196,8 +196,8 @@ webApp.directive("fileModel", [
     return {
       restrict: "A",
       link: function (scope, element, attrs) {
-        var model = $parse(attrs.fileModel);
-        var modelSetter = model.assign;
+        const model = $parse(attrs.fileModel);
+        const modelSetter = model.assign;
 
         element.bind("change", function () {
           scope.$apply(function () {
@@ -210,6 +210,6 @@ webApp.directive("fileModel", [
 ]);
 
 function uploadFile() {
-  var scope = angular.element(document.getElementById("uploadForm")).scope();
+  const scope = angular.element(document.getElementById("uploadForm")).scope();
   scope.uploadFile();
 }
