@@ -1,0 +1,7 @@
+
+
+CREATE USER IF NOT EXISTS wwwgpci@localhost IDENTIFIED BY 'wwwgpci';
+CREATE DATABASE IF NOT EXISTS gpci CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci;
+
+GRANT ALL PRIVILEGES ON gpci.* TO wwwgpci@localhost;
+FLUSH PRIVILEGES;

@@ -1,0 +1,22 @@
+<div class="panel panel-default">
+    <div class="panel-heading" ng-hide="creation">Modification de la semaine</div>
+    <div class="panel-body">
+        <form novalidate name="form" ng-submit="save()">
+            <div class="form-group">
+                <h3>Fichier pdf</h3>
+                <form id="uploadForm">
+                    <input class="selectFile" type="file" file-model="uploadFile" accept=".pdf">
+                </form>
+                <span id="message"></span>
+                <br>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-3">
+                    <input id="saveButton" type="submit" class="btn btn-success" ng-click="save()" value="Enregistrer" ng-disabled="form.$invalid"/>
+                    <button id="removeButton" type="button" class="btn btn-default" ng-click="remove()" ng-hide="creation">Supprimer</button>
+                    <button type="button" class="btn btn-default" ng-click="cancel()">Annuler</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

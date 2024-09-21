@@ -16,7 +16,7 @@ webApp.factory("planCalendarService",
             } else {
                 if (element.hasClass("coursContainer")) {
                     element.css("display", "none");
-                }                  
+                }
             }
             if(event.assignationSent == 0) {
                 element.css("backgroundColor", "#FF851B");
@@ -52,7 +52,7 @@ webApp.factory("planCalendarService",
                             uiCalendarConfig.calendars.planCalendar.fullCalendar("addEventSource", events);
                         });
                     }
-                    
+
                 });
             }
         };
@@ -62,7 +62,7 @@ webApp.factory("planCalendarService",
             coursService.sendAssignations(view.intervalStart.format(), view.intervalEnd.format()).then(function() {
                 uiCalendarConfig.calendars.planCalendar.fullCalendar("removeEventSource", events);
                 uiCalendarConfig.calendars.planCalendar.fullCalendar("addEventSource", events);
-            });          
+            });
         };
 
         /* Configuration du calendrier */

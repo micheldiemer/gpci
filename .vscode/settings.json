@@ -1,0 +1,20 @@
+{
+  "cSpell.diagnosticLevel": "Hint",
+  "editor.tabSize": 2,
+  "[javascript]": {
+    "editor.formatOnType": true, // required
+    "editor.formatOnPaste": true, // optional
+    "editor.formatOnSave": true, // optional
+    "editor.formatOnSaveMode": "file", // required to format on save
+    "files.autoSave": "onFocusChange",
+    "editor.defaultFormatter": "esbenp.prettier-vscode" // optional but recommended
+  },
+  "[php]": {
+    "editor.defaultFormatter": "bmewburn.vscode-intelephense-client",
+    "editor.quickSuggestions": {
+      "comments": true
+    },
+    "editor.tabSize": 4
+  },
+  "prettier.tabWidth": 2
+}

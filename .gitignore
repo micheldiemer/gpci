@@ -2,7 +2,6 @@ settings.prod.php
 settings.dev.php
 vendor
 composer.phar
-.vscode/
 
 # Widnows and MACOS special files
 *~
@@ -36,6 +35,7 @@ $RECYCLE.BIN/
 
 # Folder to ignore
 node_modules/
+.pnpm-store/
 
 # .env file with ENV variables
 *.env
