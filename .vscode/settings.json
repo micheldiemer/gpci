@@ -26,7 +26,19 @@
     "**/.DS_Store/**",
     "**/node_modules/**",
     "**/bower_components/**",
-    "**/vendor/**/{Tests,tests}/**",
+    // "**/vendor/**/{Tests,tests}/**",
     "**/.history/**"
-  ]
+    // "**/vendor/**/vendor/**"
+  ],
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true
+  },
+  "intelephense.references.exclude": [""],
+  "intelephense.environment.shortOpenTag": false,
+  "intelephense.telemetry.enabled": false
 }
