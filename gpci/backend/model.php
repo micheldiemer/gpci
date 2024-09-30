@@ -108,6 +108,8 @@ class Matieres extends Model
 {
     public $timestamps = false;
 
+    protected $fillable = array('nom', 'code');
+
     public function user()
     {
         return $this->belongsToMany('Users', 'users_matieres', 'id_Matieres', 'id_Users');

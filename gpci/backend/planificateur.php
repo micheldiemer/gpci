@@ -34,6 +34,7 @@ $app->get('/plan/cours/assignation', function (Request $request, Response $respo
                 $cour->save();
             }
         }
+        return $response->withJson('1');
     } catch (Exception $e) {
         return $response->getBody()->write($e)->withStatus(400);
     }
@@ -115,6 +116,7 @@ $app->post('/plan/cours/', function ($request, $response, array $args) use ($aut
             }
         } else {
             saveCours($cours, $data['classes']);
+            return $response->withJson('1');
         }
     } catch (Exception $e) {
         ($response->getBody())->write($e);
@@ -165,6 +167,7 @@ $app->put('/plan/cours/{id}', function (Request $request, Response $response, ar
             }
         } else {
             saveCours($cours, $data['classes']);
+            return $response->withJson('1');
         }
     } catch (Exception $e) {
         return $response->withJson($e)->withStatus(400);
@@ -232,7 +235,7 @@ $app->get('/plan/matiere/{id}', function (Request $request, Response $response, 
     return $response;
 });
 
-$app->post('/plan/matiere/', function (Request $request, Response $response, array $args) use ($authenticateWithRole) {
+$app->post('/plan/matiere', function (Request $request, Response $response, array $args) use ($authenticateWithRole) {
 
     $response = $authenticateWithRole('planificateur', $response);
     if ($response->getStatusCode() !== 200) {
@@ -242,10 +245,8 @@ $app->post('/plan/matiere/', function (Request $request, Response $response, arr
         $json = $request->getBody();
         $data = json_decode($json, true);
 
-        $matiere = new Matieres();
-        $matiere->nom = $data['nom'];
-        $matiere->code = $data['code'];
-        $matiere->save();
+        $matiere = Matieres::create(['nom' => $data['nom'], 'code' => $data['code']]);
+        return $response->withJson('1')->withStatus(201);
     } catch (Exception $e) {
         return $response->withJson($e)->withStatus(400);
     }
@@ -266,6 +267,7 @@ $app->put('/plan/matiere/{id}', function (Request $request, Response $response, 
         $matiere->nom = $data['nom'];
         $matiere->code = $data['code'];
         $matiere->save();
+        return $response->withJson(1);
     } catch (Exception $e) {
         return $response->withJson($e)->withStatus(400);
     }
@@ -288,6 +290,7 @@ $app->delete('/plan/matiere/{id}', function (Request $request, Response $respons
                 ->withJson(array("message" => "Vous ne pouvez pas supprimer une matiere avec des cours!"))
                 ->withStatus(400);
         }
+        return $response->withJson('1');
     } catch (Exception $e) {
         return $response->withJson($e)->withStatus(400);
     }
@@ -349,6 +352,7 @@ $app->put('/plan/enseignant/{id}', function (Request $request, Response $respons
             array_push($newMatieres, $matiere['id']);
         }
         $personne->matieres()->sync($newMatieres);
+        return $response->withJson('1');
     } catch (Exception $e) {
         return $response->withJson($e)->withStatus(400);
     }
@@ -431,6 +435,7 @@ $app->post('/plan/classe', function (Request $request, Response $response, array
         $classe->end = $data['end'];
         $classe->id_Users = $data['id_Users'];
         $classe->save();
+        return $response->withJson('1');
     } catch (Exception $e) {
         return $response->withJson($e)->withStatus(400);
     }
@@ -453,6 +458,7 @@ $app->delete('/plan/classe/{id}', function (Request $request, Response $response
                 ->withJson(array("message" => "Vous ne pouvez pas supprimer une classe avec des cours!"))
                 ->withStatus(400);
         }
+        return $response->withJson('1');
     } catch (Exception $e) {
         return $response->withJson($e)->withStatus(400);
     }
@@ -545,6 +551,7 @@ $app->delete('/plan/salle/{id}', function (Request $request, Response $response,
     try {
         $id = $args['id'];
         salles::find($id)->delete();
+        return $response->withJson('1');
     } catch (Exception $e) {
         return $response->withJson($e)->withStatus(400);
     }

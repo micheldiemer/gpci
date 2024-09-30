@@ -1,7 +1,10 @@
 <?php
 $app->post('/changePassword', function ($request, $response, array $args) use ($authenticateWithRole) {
 
-    $response = $authenticateWithRole('enseignant', $response);
+    foreach(['administrateur','planificateur','enseignant'] as $role) {
+      $response = $authenticateWithRole($role, $response);
+      if ($response->getStatusCode() == 200) break;
+    }
     if ($response->getStatusCode() !== 200) {
         return $response;
     }
@@ -19,7 +22,10 @@ $app->post('/changePassword', function ($request, $response, array $args) use ($
 
 $app->post('/changeEmail', function ($request, $response, array $args) use ($authenticateWithRole) {
 
-    $response = $authenticateWithRole('enseignant', $response);
+    foreach(['administrateur','planificateur','enseignant'] as $role) {
+      $response = $authenticateWithRole($role, $response);
+      if ($response->getStatusCode() == 200) break;
+    }
     if ($response->getStatusCode() !== 200) {
         return $response;
     }
