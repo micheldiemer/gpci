@@ -6,7 +6,7 @@
 
 La table matiere doit exister dans la base de données: matieres(id,nom,code)
 
-'''php
+```php
 // fichier model.php
 class Matieres extends Model {
     public $timestamps = false;
