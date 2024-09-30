@@ -16,7 +16,7 @@ $app->get('/admin/specialmail', function ($request, $response, array $args) {
             'user_firstname' => $personne->firstName,
             'user_lastname' => $personne->lastName,
             'user_login' => $personne->login,
-
+            'gpci_url' => GPCI_URL
         );
         $data = $personne;
 

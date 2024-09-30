@@ -10,6 +10,7 @@
  * \details     this file contains all the routes for administrator role
  */
 
+
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
 
@@ -76,9 +77,10 @@ $app->post('/admin/personnes', function ($request, $response, array $args) use (
             $personne->lastName = $data['lastName'];
             $personne->email = $data['email'];
             $personne->token = $token;
+            $personne->tokenCDate = new DateTime();
             $personne->enabled = 0;
             $personne->connected = 0;
-            $personne->hash = uniqid(rand(), true);
+            $personne->hash = '';
             $personne->theme = '';
             $personne = Users::create($personne->toArray());
         } catch (Exception $e) {
@@ -93,7 +95,7 @@ $app->post('/admin/personnes', function ($request, $response, array $args) use (
             'user_firstname' => $personne->firstName,
             'user_lastname' => $personne->lastName,
             'user_login' => $personne->login,
-
+            'gpci_url' => GPCI_URL,
         );
 
         $template = file_get_contents("templates/new_user.html");

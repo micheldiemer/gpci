@@ -23,7 +23,6 @@ $app->addRoutingMiddleware();
 $errorMiddleware = $app->addErrorMiddleware(true, true, true);
 
 
-$baseUrl = "https://dev.mshome.net/gpci/backend/";
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(-1);
@@ -96,20 +95,37 @@ $app->get('/public/cours', function ($request, $response, array $args) {
 });
 
 $app->post('/set_firstpassword', function ($request, $response, array $args) {
+
     $json = $request->getBody();
     $data = json_decode($json, true);
-    $user = Users::where('id', $data['id'])->firstOrFail();
-    $hash = uniqid(rand(), true);
-    if ($data['password'] == $data['password_confirm']) {
-        $user->hash = $hash;
-        $user->password = sha1($hash . sha1($data['password']));
-        $user->save();
-        ($response->getBody())->write('1');
-        return $response;
-    } else {
-        ($response->getBody())->write(false);
+
+    if (!$data || !isset($data['id']) || !isset($data['password']) || !isset($data['password_confirm'])) {
         return $response->withStatus(400);
     }
+
+    $user = Users::where('id', $data['id'])->first();
+    if (is_null($user)) {
+        return $response->withStatus(401);
+    }
+
+    if ($user->password !== '') {
+        return $response->withJson('Le mot de passe a déjà été défini. Veuillez contacter l’administrateur du site', 403);
+    }
+
+    if ($user->enabled == 0) {
+        return $response->withJson('Utilisateur non activé', 403);
+    }
+
+    if ($data['password'] !== $data['password_confirm']) {
+        return $response->withStatus(400);
+    }
+
+    $hash = uniqid(rand(), true);
+    $user->hash = $hash;
+    $user->password = sha1($hash . sha1($data['password']));
+    $user->save();
+    ($response->getBody())->write('1');
+    return $response;
 });
 
 $app->post('/theme', function (Request $request, Response $response, array $args) use ($authenticateWithRole) {

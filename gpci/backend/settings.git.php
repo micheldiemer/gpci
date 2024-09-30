@@ -11,6 +11,9 @@ $settings = array(
     'prefix' => ''
 );
 
+const BASE_URL = 'https://dev.mshome.net/gpci/backend/';
+const GPCI_URL = 'https://dev.mshome.net/gpci/';
+
 $smtpSettings = array(
     'MAIL_HOST' => 'localhost',
     'MAIL_FROM' => ['ifide@ifide.net', 'IFIDE SupFormation'],

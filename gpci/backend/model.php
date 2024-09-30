@@ -29,7 +29,7 @@ class Users extends Model
 {
     protected $primaryKey = 'id';
     public $timestamps = false;
-    protected $fillable = array('login', 'password', 'firstName', 'firstName', 'lastName', 'email', 'token', 'enabled', 'connected', 'hash', 'theme');
+    protected $fillable = array('login', 'password', 'firstName', 'firstName', 'lastName', 'email', 'token', 'enabled', 'connected', 'hash', 'theme', 'tokenCDate');
 
     public function roles()
     {

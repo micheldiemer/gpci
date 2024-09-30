@@ -47,7 +47,7 @@
     }
 </style>
 <div class="header">
-    <img class="logo" src="$baseUrl/img/logo.png" alt="">
+    <img class="logo" src="<?= BASE_URL ?>/img/logo.png" alt="">
     <h1 class="header-title">PLANNING <?php echo $classe->nom . " - Semaine " . $week; ?></h1>
 </div>
 <table class="agenda">
