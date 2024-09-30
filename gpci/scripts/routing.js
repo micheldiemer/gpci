@@ -3,7 +3,8 @@ webApp.config(function (
   $stateProvider,
   $urlRouterProvider,
   RestangularProvider,
-  USERS_ROLES
+  USERS_ROLES,
+  BASE_URL
 ) {
   //Mise en place de l'url de base pour restangular
   RestangularProvider.setBaseUrl(BASE_URL);

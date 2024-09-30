@@ -16,7 +16,10 @@
             //TO DO ERROR TOASTR
             reject();
           }
-        );
+        )
+        .catch(function () {
+          console.error("plan/weeks erreur");
+        });
     });
   }
 

@@ -1,6 +1,4 @@
-const BASE_URL = "https://dev.mshome.net/gpci/backend";
-
-const webApp = angular.module("webApp", [
+﻿window.webApp = angular.module("webApp", [
   "ui.router",
   "ui.bootstrap",
   "smart-table",
@@ -9,6 +7,8 @@ const webApp = angular.module("webApp", [
   "restangular",
   "ui.calendar",
 ]);
+
+webApp.constant("BASE_URL", "https://dev.mshome.net/gpci/backend");
 
 //TO DO : prendre ces constantes du serveur
 webApp.constant("USERS_ROLES", {

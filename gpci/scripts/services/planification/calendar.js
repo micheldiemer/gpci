@@ -173,21 +173,21 @@ webApp.factory(
       });
       return result;
     }
-    //Fond clickable pour rajouter les cours
+    //Fond clickable pour ajouter les cours
     const backgroundEvent = [
       {
         start: "8:00",
         end: "12:00",
         dow: [1, 2, 3, 4, 5],
         className: "coursContainer",
-        description: "Rajouter un cours",
+        description: "Ajouter un cours",
       },
       {
         start: "13:00",
         end: "17:00",
         dow: [1, 2, 3, 4, 5],
         className: "coursContainer",
-        description: "Rajouter un cours",
+        description: "Ajouter un cours",
       },
     ];
 

@@ -11,9 +11,9 @@ $app->post('/changePassword', function ($request, $response, array $args) use ($
         $hash = uniqid(rand(), true);
         $newPassword = sha1($hash . sha1($data['newPassword']));
         Users::where('id', $_SESSION['id'])->update(['password' => $newPassword, 'hash' => $hash]);
-        $response->withStatus(200);
+        return $response->withStatus(200);
     } else {
-        $response->withStatus(400);
+        return $response->withStatus(400);
     }
 });
 
@@ -27,8 +27,8 @@ $app->post('/changeEmail', function ($request, $response, array $args) use ($aut
     $data = json_decode($json, true);
     if ($data['newEmail'] == $data['newEmailConfirm']) {
         Users::where('id', $_SESSION['id'])->update(['email' => $data['newEmail']]);
-        $response->withStatus(200);
+        return $response->withStatus(200);
     } else {
-        $response->withStatus(400);
+        return $response->withStatus(400);
     }
 });

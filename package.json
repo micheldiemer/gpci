@@ -12,7 +12,6 @@
     "gulp-replace": "^1.1.4",
     "gulp-terser": "^2.1.0",
     "gulp-util": "^3.0.8",
-    "gulp4-run-sequence": "^1.0.2",
     "inquirer": "^8.2.6",
     "minimist": "^1.2.8",
     "readable-stream": "^4.5.2",

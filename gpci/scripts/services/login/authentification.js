@@ -12,13 +12,17 @@
             if (data) {
               const user = data;
               //Stockage des données utilisateurs dans le navigateur
-              $window.sessionStorage["userData"] = JSON.stringify(user);
-              Session.create(user);
+              try {
+                $window.sessionStorage["userData"] = JSON.stringify(user);
+                Session.create(user);
 
-              //Déclencher l'evenement loginSuccess
-              $rootScope.$broadcast(AUTH_EVENTS.loginSuccess);
-              //lancer la fonction succès ( 2eme paramètre)
-              success(user);
+                //Déclencher l'evenement loginSuccess
+                $rootScope.$broadcast(AUTH_EVENTS.loginSuccess);
+                //lancer la fonction succès ( 2eme paramètre)
+                success(user);
+              } catch (error) {
+                console.error("authentification.js JSON sessionStorage error");
+              }
             }
           },
           function () {

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <title>Test REST API</title>
+  <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/pretty-print-json@3.0/dist/css/pretty-print-json.dark-mode.css>
+</head>
+
+
+<body>
+  <form method="POST" action="user.html">
+    <input type="text" id="name" name="name" placeholder="Nom">
+    <input type="text" id="password" name="password" placeholder="Mot de passe">
+    <button id="btnLogin">Se connecter</button>
+  </form>
+
+  <pre id="req" class="json-container"></pre>
+  <pre id="res" class="json-container"></pre>
+
+
+  <script src=https://cdn.jsdelivr.net/npm/pretty-print-json@3.0/dist/pretty-print-json.min.js></script>
+  <script src="user.mjs?v=2" type="module"></script>
+
+</body>
+
+</html>

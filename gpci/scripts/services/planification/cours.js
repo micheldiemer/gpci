@@ -1,75 +1,94 @@
-webApp.factory("coursService",
-	function($q, Restangular, notifService){
+webApp.factory("coursService", function ($q, Restangular, notifService) {
+  function getOne(id) {
+    return $q(function (resolve, reject) {
+      //TO DO Lancer toastr chargement
+      Restangular.one("plan/cours", id)
+        .get()
+        .then(
+          function (data) {
+            data.id_Users = Number(data.id_Users);
+            data.id_Matieres = Number(data.id_Matieres);
+            data.id_Salles = Number(data.id_Salles);
+            //TO DO SUCCESS TOASTR
+            resolve(data);
+          },
+          function () {
+            //TO DO ERROR TOASTR
+            reject();
+          }
+        )
+        .catch(() => {
+          console.error("plan/cours id erreur");
+        });
+    });
+  }
 
-	    function getOne(id) {
-	        return $q(function(resolve, reject) {
-	            //TO DO Lancer toastr chargement
-	            Restangular.one("plan/cours", id).get().then(function (data) {
-	                data.id_Users = Number(data.id_Users);
-	                data.id_Matieres = Number(data.id_Matieres);
-					data.id_Salles = Number(data.id_Salles);
-	                //TO DO SUCCESS TOASTR
-	                resolve(data);
-	            }, function() {
-	                //TO DO ERROR TOASTR
-	                reject();
-	            });
-	        });
-	    };
+  function getNew() {
+    return Restangular.one("plan/cours");
+  }
 
-	    function getNew() {
-	        return Restangular.one("plan/cours");
-	    };
+  function save(cours) {
+    return $q(function (resolve, reject) {
+      notifService.saving();
+      cours.save().then(
+        function () {
+          notifService.saved();
+          resolve();
+        },
+        function (response) {
+          notifService.error(response.data.message);
+          reject();
+        }
+      );
+    });
+  }
 
-	    function save(cours) {
-	        return $q(function(resolve, reject) {
-	            notifService.saving();
-	            cours.save().then(function() {
-	                notifService.saved();
-	                resolve();
-	            }, function(response) {
-	                notifService.error(response.data.message);
-	                reject();
-	            });
-	        });
-	    };
+  function remove(cours) {
+    return $q(function (resolve, reject) {
+      notifService.deleting();
+      cours.remove().then(
+        function () {
+          notifService.deleted();
+          resolve();
+        },
+        function (response) {
+          notifService.error(response.data.message);
+          reject();
+        }
+      );
+    });
+  }
 
-	    function remove(cours) {
-	        return $q(function(resolve, reject) {
-	            notifService.deleting();
-	            cours.remove().then(function() {
-	                notifService.deleted();
-	                resolve();
-	            }, function(response) {
-	                notifService.error(response.data.message);
-	                reject();
-	            });
-	        });
-	    };
-        
-        function sendAssignations(start,end) {
-            return $q(function(resolve, reject) {
-                notifService.sending();
-                Restangular.one("plan/cours").customGET("assignation", { start: start, end: end }).then(function() {
-                    notifService.sent();
-                    resolve();
-                }, function(response) {
-                    notifService.error(response.data.message);
-                    reject();
-                });
-            });
-        };
+  function sendAssignations(start, end) {
+    return $q(function (resolve, reject) {
+      notifService.sending();
+      Restangular.one("plan/cours")
+        .customGET("assignation", { start: start, end: end })
+        .then(
+          function () {
+            notifService.sent();
+            resolve();
+          },
+          function (response) {
+            notifService.error(response.data.message);
+            reject();
+          }
+        )
+        .catch(() => {
+          console.error("plan/cours assignation erreur");
+        });
+    });
+  }
 
-	    return {
+  return {
+    getOne: getOne,
 
-	        getOne: getOne,
+    getNew: getNew,
 
-	        getNew: getNew,
+    save: save,
 
-	        save: save,
+    remove: remove,
 
-	        remove: remove,
-            
-            sendAssignations: sendAssignations
-	    }
-	})
+    sendAssignations: sendAssignations,
+  };
+});

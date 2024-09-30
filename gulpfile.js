@@ -1,6 +1,5 @@
 /* eslint-disable no-octal */
 const gulp = require("gulp");
-const runSequence = require("gulp4-run-sequence");
 const inject = require("gulp-inject");
 const concat = require("gulp-concat");
 const terser = require("terser");
@@ -18,27 +17,6 @@ const isElectron = () =>
 const destF = () =>
   isElectron() ? "./preprod/electronApp" : "./preprod/webApp";
 
-gulp.task("webApp", function () {
-  //Partie webApp
-  return Promise.resolve(
-    runSequence(
-      "clean",
-      [
-        "_backend_html",
-        "_backend_img",
-        "_backend_php",
-        "_css",
-        "_html",
-        "_js",
-      ],
-      "_tmp_cleanup",
-      function () {
-        console.log("task webApp done");
-      }
-    )
-  );
-});
-
 gulp.task("_backend_php", async function () {
   gulp
     .src([
@@ -54,7 +32,6 @@ gulp.task("_css", async function () {
     .src("./gpci/css/**/*.css")
     .pipe(gulp.dest(destF() + "/css", { mode: 0604 }));
 });
-
 
 gulp.task("_backend_img", async function () {
   gulp
@@ -100,13 +77,29 @@ gulp.task("_js", async function () {
 
 gulp.task("clean", async function () {
   await pipeline(
-    gulp.src([destF() + "/*", destF() + "/.*"], {
+    gulp.src([destF() + "/"], {
       read: false,
       allowEmpty: true,
     }),
     clean({ force: true })
   );
 });
+
+gulp.task(
+  "webApp",
+  gulp.series(
+    "clean",
+    gulp.parallel(
+      "_backend_html",
+      "_backend_img",
+      "_backend_php",
+      "_css",
+      "_html",
+      "_js"
+    ),
+    "_tmp_cleanup"
+  )
+);
 
 gulp.task("default", gulp.series("webApp"));
 

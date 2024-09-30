@@ -46,7 +46,9 @@ webApp.controller(
       try {
         const user = JSON.parse($window.sessionStorage["userData"]);
         $scope.login(user);
-      } catch (error) {}
+      } catch (error) {
+        console.error("login.js JSON sessionStorage error");
+      }
     }
   }
 );

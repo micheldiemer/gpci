@@ -12,8 +12,7 @@
 -- Structure de la table `salles`
 --
 
-USE gpci_preprod;
-
+DROP TABLE IF EXISTS salles;
 CREATE TABLE salles (nom varchar(25) NOT NULL, id int(11) NOT NULL AUTO_INCREMENT, PRIMARY KEY (id));
 
 --

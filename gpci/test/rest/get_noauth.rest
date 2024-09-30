@@ -1,0 +1,4 @@
+@baseUrl = https://dev.mshome.net/gpci/backend
+GET {{baseUrl}}/ical/classe/1
+
+###

@@ -497,11 +497,20 @@ $app->post('/plan/salle', function (Request $request, Response $response, array 
         $json = $request->getBody();
         $data = json_decode($json, true);
 
-        $salle = new Salles;
-        $salle->nom = $data['nom'];
-        $salle->save();
+        if (!isset($data['nom'])) {
+            return $response->withJson(array("message" => "Nom de la salle manquant!"))->withStatus(400);
+        }
+
+        $salle = Salles::where('nom', $data['nom'])->first();
+        if ($salle) {
+            return $response->withJson(array("message" => "Salle déjà existante!"))->withStatus(400);
+        };
+
+        $salle = Salles::create(['nom' => $data['nom']]);
+        return $response->withJson('1')->withStatus(201);
     } catch (Exception $e) {
-        return $response->withJson($e)->withStatus(400);
+
+        return $response->withJson(strval($e), 500);
     }
 });
 

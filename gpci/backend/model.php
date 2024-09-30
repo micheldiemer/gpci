@@ -22,125 +22,149 @@ $resolver->setDefaultConnection('default');
 use \Illuminate\Database\Eloquent\Model;
 
 /**
-* \class        Users model.php "Backend/model.php
-* \brief        corresponding to the registered users
-*/
-class Users extends Model {
+ * \class        Users model.php "Backend/model.php
+ * \brief        corresponding to the registered users
+ */
+class Users extends Model
+{
+    protected $primaryKey = 'id';
     public $timestamps = false;
+    protected $fillable = array('login', 'password', 'firstName', 'firstName', 'lastName', 'email', 'token', 'enabled', 'connected', 'hash', 'theme');
 
-    public function roles() {
+    public function roles()
+    {
         return $this->belongsToMany('Roles', 'users_roles', 'id_Users', 'id_Roles');
     }
 
-    public function matieres() {
+    public function matieres()
+    {
         return $this->belongsToMany('Matieres', 'users_matieres', 'id_Users', 'id_Matieres');
     }
 
-    public function indisponibilite() {
+    public function indisponibilite()
+    {
         return $this->hasMany('Indisponibilite', 'id_Users');
     }
 
-    public function cours() {
+    public function cours()
+    {
         return $this->hasMany('Cours', 'id_Users');
     }
 
-    public function classes() {
+    public function classes()
+    {
         return $this->hasMany('Classes', 'id_Users');
     }
-
 }
 
 /**
-* \class        Classes model.php "Backend/model.php
-* \brief        corresponding to the classes
-* \details		corresponding to the "classes". A "classe" is composed by many students
-*/
-class Classes extends Model {
+ * \class        Classes model.php "Backend/model.php
+ * \brief        corresponding to the classes
+ * \details		corresponding to the "classes". A "classe" is composed by many students
+ */
+class Classes extends Model
+{
     public $timestamps = false;
 
-    public function user() {
+    public function user()
+    {
         return $this->belongsTo('Users', 'id_Users')->select("firstName", "lastName", "id");
     }
-    
-    public function cours() {
+
+    public function cours()
+    {
         return $this->belongsToMany('Cours', 'cours_classes', 'id_Classes', 'id_Cours');
     }
 }
 
 /**
-* \class        Fermeture model.php "Backend/model.php
-* \brief        corresponding to the day the school is close
-*/ 
-class Fermeture extends Model {
+ * \class        Fermeture model.php "Backend/model.php
+ * \brief        corresponding to the day the school is close
+ */
+class Fermeture extends Model
+{
     public $timestamps = false;
 }
 
 /**
-* \class        Indisponibilite model.php "Backend/model.php
-* \brief        corresponding to the unusable hours in the teacher's schedule
-*/
-class Indisponibilite extends Model {
+ * \class        Indisponibilite model.php "Backend/model.php
+ * \brief        corresponding to the unusable hours in the teacher's schedule
+ */
+class Indisponibilite extends Model
+{
     public $timestamps = false;
 
-    public function user() {
+    public function user()
+    {
         return $this->belongsTo('Users', 'id_Users');
     }
 }
 
 /**
-* \class        Matieres model.php "Backend/model.php
-* \brief        corresponding to the lesson's subject f.e. : mathematics, english
-*/
-class Matieres extends Model {
+ * \class        Matieres model.php "Backend/model.php
+ * \brief        corresponding to the lesson's subject f.e. : mathematics, english
+ */
+class Matieres extends Model
+{
     public $timestamps = false;
 
-    public function user() {
+    public function user()
+    {
         return $this->belongsToMany('Users', 'users_matieres', 'id_Matieres', 'id_Users');
     }
-    public function cours() {
+    public function cours()
+    {
         return $this->hasMany('Cours', 'id_Matieres');
     }
 }
 
 /**
-* \class        Cours Cours.php "Backend/model.php
-* \brief        corresponding to lessons
-*/
-class Cours extends Model {
+ * \class        Cours Cours.php "Backend/model.php
+ * \brief        corresponding to lessons
+ */
+class Cours extends Model
+{
     public $timestamps = false;
-    public function user() {
-        return $this->belongsTo('Users', 'id_Users')->with('matieres')->select('id','firstName','lastName', 'email');
+    public function user()
+    {
+        return $this->belongsTo('Users', 'id_Users')->with('matieres')->select('id', 'firstName', 'lastName', 'email');
     }
 
-    public function matiere() {
+    public function matiere()
+    {
         return $this->belongsTo('Matieres', 'id_Matieres');
     }
-    
-    public function salle() {
+
+    public function salle()
+    {
         return $this->belongsTo('Salles', 'id_Salles');
     }
 
-    public function classes() {
+    public function classes()
+    {
         return $this->belongsToMany('Classes', 'cours_classes', 'id_Cours', 'id_Classes')->select('id', 'nom');
     }
 }
 
 /**
-* \class        Roles model.php "Backend/model.php
-* \brief        Keeping the different roles an user can have
-* \details		corresponding to the role an user has. He can be : Administrateur,Planificateur or Enseignant
-*/
-class Roles extends Model {
+ * \class        Roles model.php "Backend/model.php
+ * \brief        Keeping the different roles an user can have
+ * \details		corresponding to the role an user has. He can be : Administrateur,Planificateur or Enseignant
+ */
+class Roles extends Model
+{
     public $timestamps = false;
     protected $casts = [
         'priority' => 'int',
     ];
-    public function user() {
+    public function user()
+    {
         return $this->belongsToMany('Users', 'users_matieres', 'id_Roles', 'id_Users');
     }
 }
 
-class Salles extends Model {
+class Salles extends Model
+{
     public $timestamps = false;
+    protected $fillable = array('nom');
 }
-?>

@@ -19,7 +19,10 @@ webApp.factory("enseignantsService", function ($q, notifService, Restangular) {
             //TO DO ERROR TOASTR
             reject();
           }
-        );
+        )
+        .catch(() => {
+          console.error("plan/enseignant all erreur");
+        });
     });
   }
 
@@ -49,7 +52,10 @@ webApp.factory("enseignantsService", function ($q, notifService, Restangular) {
             //TO DO ERROR TOASTR
             reject();
           }
-        );
+        )
+        .catch(() => {
+          console.error("plan/enseignant id errreur");
+        });
     });
   }
 

@@ -9,7 +9,7 @@ webApp.factory("profilService", function ($q, Restangular) {
               resolve("ok");
             },
             function () {
-              reject("Il y a eu un probl�me sur le serveur");
+              reject("Il y a eu un problème sur le serveur");
             }
           );
       });
@@ -23,7 +23,7 @@ webApp.factory("profilService", function ($q, Restangular) {
               resolve("ok");
             },
             function () {
-              reject("Il y a eu un probl�me sur le serveur");
+              reject("Il y a eu un problème sur le serveur");
             }
           );
       });

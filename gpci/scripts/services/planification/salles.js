@@ -16,7 +16,10 @@ webApp.factory("sallesService", function ($q, notifService, Restangular) {
             //TO DO ERROR TOASTR
             reject();
           }
-        );
+        )
+        .catch(() => {
+          console.error("plan/salle erreur");
+        });
     });
   }
 
@@ -46,7 +49,10 @@ webApp.factory("sallesService", function ($q, notifService, Restangular) {
             //TO DO ERROR TOASTR
             reject();
           }
-        );
+        )
+        .catch(() => {
+          console.error("plan/salle erreur");
+        });
     });
   }
 

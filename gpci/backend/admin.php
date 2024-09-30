@@ -44,8 +44,16 @@ $app->post('/admin/personnes', function ($request, $response, array $args) use (
         return $response;
     }
     try {
-        $json = $request->getBody();
+        $json = strval($request->getBody());
         $data = json_decode($json, true);
+
+        //sync roles
+        $newRoles = [];
+        foreach ($data['roles'] as $role) {
+            array_push($newRoles, $role['id']);
+        }
+
+        // return $response->withJson($data);
         $token = uniqid(rand(), true);
         $username = strtolower($data['firstName'][0] . $data['lastName']);
         if (Users::where('login', $username)->exists()) {
@@ -59,24 +67,24 @@ $app->post('/admin/personnes', function ($request, $response, array $args) use (
                 }
             }
         }
-        $personne = new Users;
-        $personne->login = $username;
-        $personne->password = '';
-        $personne->firstName = $data['firstName'];
-        $personne->lastName = $data['lastName'];
-        $personne->email = $data['email'];
-        $personne->token = $token;
-        $personne->enabled = 0;
-        $personne->connected = 0;
-        $personne->save();
 
-        //sync roles
-        $newRoles = [];
-        foreach ($data['roles'] as $role) {
-            array_push($newRoles, $role['id']);
+        try {
+            $personne = new Users;
+            $personne->login = $username;
+            $personne->password = '';
+            $personne->firstName = $data['firstName'];
+            $personne->lastName = $data['lastName'];
+            $personne->email = $data['email'];
+            $personne->token = $token;
+            $personne->enabled = 0;
+            $personne->connected = 0;
+            $personne->hash = uniqid(rand(), true);
+            $personne->theme = '';
+            $personne = Users::create($personne->toArray());
+        } catch (Exception $e) {
+            return $response->withJson($e)->withStatus(500);
         }
 
-        $personne->roles()->sync($newRoles);
 
         // Liste variable a utilisé dans le templat
         $list_var = array(
@@ -101,18 +109,24 @@ $app->post('/admin/personnes', function ($request, $response, array $args) use (
         $message = (new Email())
             ->from(new Address($smtpSettings['MAIL_FROM'][0], $smtpSettings['MAIL_FROM'][1]))
             ->subject('Création de votre compte GPCI')
-            ->to(new Address($data['email'], $data['firstName'] + '' + $data['lastName']))
+            ->to(new Address($data['email'], $data['firstName'] . ' ' . $data['lastName']))
             ->html($template);
 
         // envoie
         try {
-            $results = $mailer->send($message);
+            $res = '1';
+            $mailer->send($message);
         } catch (Exception $e) {
+            $res = '0 mail non envoyé';
+
+            //DEBUG
+            var_dump($e);
+            die();
             $results = $e;
         }
 
         // Print the results, 1 = message sent!
-        ($response->getBody())->write($results);
+        ($response->getBody())->write($res);
         return $response;
     } catch (Exception $e) {
         return $response->withJson($e);
@@ -146,7 +160,8 @@ $app->put('/admin/personnes/{id}', function ($request, $response, array $args) u
 
         $personne->roles()->sync($newRoles);
 
-        return $response->setBody->write('1');
+        ($response->getBody())->write('1');
+        return $response;
     } catch (Exception $e) {
         return $response->withJson($e);
     }

@@ -16,7 +16,10 @@ webApp.factory("matieresService", function ($q, notifService, Restangular) {
             //TO DO ERROR TOASTR
             reject();
           }
-        );
+        )
+        .catch(() => {
+          console.error("plan/matiere erreur");
+        });
     });
   }
 
@@ -46,7 +49,10 @@ webApp.factory("matieresService", function ($q, notifService, Restangular) {
             //TO DO ERROR TOASTR
             reject();
           }
-        );
+        )
+        .catch(() => {
+          console.error("plan/matiere avec id erreur");
+        });
     });
   }
 
@@ -57,16 +63,21 @@ webApp.factory("matieresService", function ($q, notifService, Restangular) {
   function save(matiere) {
     return $q(function (resolve, reject) {
       notifService.saving();
-      matiere.save().then(
-        function () {
-          notifService.saved();
-          resolve();
-        },
-        function (response) {
-          notifService.error(response.data.message);
-          reject();
-        }
-      );
+      matiere
+        .save()
+        .then(
+          function () {
+            notifService.saved();
+            resolve();
+          },
+          function (response) {
+            notifService.error(response.data.message);
+            reject();
+          }
+        )
+        .catch(() => {
+          console.error("plan/matiere erreur");
+        });
     });
   }
 

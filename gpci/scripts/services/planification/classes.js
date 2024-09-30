@@ -92,16 +92,21 @@ webApp.factory("classesService", function ($q, notifService, Restangular) {
   function save(classe) {
     return $q(function (resolve, reject) {
       notifService.saving();
-      classe.save().then(
-        function () {
-          notifService.saved();
-          resolve();
-        },
-        function (message) {
-          notifService.error(message);
-          reject();
-        }
-      );
+      classe
+        .save()
+        .then(
+          function () {
+            notifService.saved();
+            resolve();
+          },
+          function (message) {
+            notifService.error(message);
+            reject();
+          }
+        )
+        .error(() => {
+          console.error("save(classe) erreur");
+        });
     });
   }
 

@@ -1,8 +1,13 @@
-try {
+﻿try {
   function includeJs(jsFilePath) {
-    $("body").append($("<script></script>").attr("src", jsFilePath));
+    $("body").append(
+      $("<script></script>").attr("src", jsFilePath + "?v=" + Date.now())
+    );
+    console.debug("Included " + jsFilePath);
   }
   includeJs("scripts/app.js");
+  includeJs("scripts/fonctionGlobale.js");
+  includeJs("scripts/routing.js");
   includeJs("scripts/controllers/activation.js");
   includeJs("scripts/controllers/administration/Details.js");
   includeJs("scripts/controllers/administration/List.js");
@@ -30,8 +35,6 @@ try {
   includeJs("scripts/controllers/profil.js");
   includeJs("scripts/controllers/public/annee.js");
   includeJs("scripts/filters/unique.js");
-  includeJs("scripts/fonctionGlobale.js");
-  includeJs("scripts/routing.js");
   includeJs("scripts/services/activation.js");
   includeJs("scripts/services/administration/personnes.js");
   includeJs("scripts/services/enseignement/calendar.js");

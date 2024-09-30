@@ -17,6 +17,7 @@ webApp.controller(
     $scope.creation = personne ? false : true;
 
     serviceRoles.getRoles().then(function (roles) {
+      console.debug("Details.js serviceRoles.getRoles()", roles);
       $scope.roles = roles;
     });
 
@@ -27,6 +28,7 @@ webApp.controller(
       adminService.getOne(personne.id).then(function (personne) {
         Restangular.copy(personne, $scope.personne);
 
+        console.debug("adminService.getOne(personne.id) personne", personne);
         angular.forEach(
           personne.roles,
           function (role) {
@@ -71,11 +73,17 @@ webApp.controller(
 
       $scope.$watch(
         function () {
+          console.debug("$scope.$watch", $scope.formRoles);
           return $scope.formRoles;
         },
         function (value) {
           $scope.personne.roles = [];
+          console.debug(
+            "serviceRoles.getRoles() $scope.formRoles",
+            $scope.formRoles
+          );
           angular.forEach($scope.formRoles, function (v, k) {
+            console.debug("angular.forEach($scope.formRoles", v, k);
             v && $scope.personne.roles.push(getRolesById(k));
           });
         },
