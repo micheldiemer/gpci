@@ -1,6 +1,6 @@
 ﻿webApp.controller(
   "PlanAnneeController",
-  function ($scope, $uibModal, $http, classesService, weekService) {
+  function ($scope, $uibModal, $http, classesService, weekService, BASE_URL) {
     $scope.current_classes = [];
     $scope.next_classes = [];
     classesService.getCurrentNextList("current").then(function (classes) {

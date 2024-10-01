@@ -1,6 +1,12 @@
 webApp.factory(
   "planCalendarService",
-  function (uiCalendarConfig, $uibModal, coursService, enseignantsService) {
+  function (
+    uiCalendarConfig,
+    $uibModal,
+    coursService,
+    enseignantsService,
+    BASE_URL
+  ) {
     const eventRender = function (event, element, view) {
       if (view.type === "agendaWeek") {
         if (

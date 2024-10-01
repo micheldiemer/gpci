@@ -1,6 +1,6 @@
 webApp.factory(
   "ensCalendarService",
-  function (uiCalendarConfig, indispoService) {
+  function (uiCalendarConfig, indispoService, BASE_URL) {
     //Partie pour calendar indispos
     const dayRender = function (date, cell) {
       if (

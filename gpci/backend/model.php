@@ -65,6 +65,7 @@ class Users extends Model
 class Classes extends Model
 {
     public $timestamps = false;
+    public $fillable = array('nom', 'start', 'end', 'id_Users');
 
     public function user()
     {
@@ -169,4 +170,9 @@ class Salles extends Model
 {
     public $timestamps = false;
     protected $fillable = array('nom');
+
+    public function cours()
+    {
+        return $this->hasMany('Cours', 'id_Salles');
+    }
 }

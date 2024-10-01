@@ -246,7 +246,9 @@ $app->post('/plan/matiere', function (Request $request, Response $response, arra
         $data = json_decode($json, true);
 
         $matiere = Matieres::create(['nom' => $data['nom'], 'code' => $data['code']]);
-        return $response->withJson('1')->withStatus(201);
+        return is_null($matiere)
+            ? $response->withJson('Matière non créée', 500)
+            : $response->withJson('1')->withStatus(201);
     } catch (Exception $e) {
         return $response->withJson($e)->withStatus(400);
     }
@@ -407,9 +409,16 @@ $app->put('/plan/classe/{id}', function (Request $request, Response $response, a
         $classe = Classes::where('id', $id)->firstOrFail();
 
         $classe->nom = $data['nom'];
-        $classe->start = $data['start'];
-        $classe->end = $data['end'];
+        $classe->start =
+            DateTime::createFromFormat('Y-m-d\TH:i:s.v\Z', $data['start']);
+        $classe->end =
+            DateTime::createFromFormat('Y-m-d\TH:i:s.v\Z', $data['end']);
         $classe->id_Users = $data['id_Users'];
+
+        if ($classe->start === false || $classe->end === false) {
+            return $response->withJson(['message' => 'Dates incorrectes format attendu YYYY-MM-DDTHH:mm:ss.000Z trouvé ' . htmlspecialchars($data['start'])])->withStatus(400);
+        }
+
         $classe->save();
 
         ($response->getBody())->write('1');
@@ -428,14 +437,21 @@ $app->post('/plan/classe', function (Request $request, Response $response, array
     try {
         $json = $request->getBody();
         $data = json_decode($json, true);
+        $userStart = $data['start'];
+        $userEnd = $data['end'];
 
-        $classe = new Classes;
-        $classe->nom = $data['nom'];
-        $classe->start = $data['start'];
-        $classe->end = $data['end'];
-        $classe->id_Users = $data['id_Users'];
-        $classe->save();
-        return $response->withJson('1');
+        $data['start'] = DateTime::createFromFormat('Y-m-d\TH:i:s.v\Z', $userStart);
+        $data['end'] = DateTime::createFromFormat('Y-m-d\TH:i:s.v\Z', $userEnd);
+
+        if ($data['start'] === false || $data['end'] === false) {
+            return $response->withJson(['message' => 'Dates incorrectes format attendu YYYY-MM-DDTHH:mm:ss.000Z / fourni ' . htmlspecialchars($userStart)], 400);
+        }
+
+        $classe = Classes::create(['nom' => $data['nom'], 'start' => $data['start'], 'end' => $data['end'], 'id_Users' => $data['id_Users']]);
+
+        return is_null($classe)
+            ? $response->withJson('Classe non créée')->withStatus(500)
+            : $response->withJson('1');
     } catch (Exception $e) {
         return $response->withJson($e)->withStatus(400);
     }
@@ -513,9 +529,10 @@ $app->post('/plan/salle', function (Request $request, Response $response, array 
         };
 
         $salle = Salles::create(['nom' => $data['nom']]);
-        return $response->withJson('1')->withStatus(201);
+        return is_null($salle)
+            ? $response->withJson('Salle non créée')->withStatus(500)
+            : $response->withJson('1', 201);
     } catch (Exception $e) {
-
         return $response->withJson(strval($e), 500);
     }
 });
@@ -550,7 +567,13 @@ $app->delete('/plan/salle/{id}', function (Request $request, Response $response,
     }
     try {
         $id = $args['id'];
-        salles::find($id)->delete();
+        $salle = Salles::where('id', $id)->firstOrFail();
+
+        if (count($salle->cours) > 0) {
+            return $response->withJson(array("message" => 'Vous ne pouvez pas supprimer une salle avec des cours !'))->withStatus(400);
+        }
+
+        $salle->delete();
         return $response->withJson('1');
     } catch (Exception $e) {
         return $response->withJson($e)->withStatus(400);
