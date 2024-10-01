@@ -1,1 +1,7 @@
-* text=auto eol=lf  
+*.html text=auto eol=lf
+*.js text=auto eol=lf
+*.php text=auto eol=lf
+*.css text=auto eol=lf
+*.http text=auto eol=lf
+*.md text=auto eol=lf
+*.sql text=auto eol=lf
