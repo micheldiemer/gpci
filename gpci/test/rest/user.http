@@ -1,0 +1,150 @@
+@password = xxx
+@PHPSESSID = xxx
+@baseUrl = https://dev.mshome.net/gpci/backend
+
+# curl --ssl-no-revoke -v -d '{"name": "adminmd","password": @password}' https:/dev.mshome.net/gpci/backend/login
+
+
+### GET
+
+GET https://dev.mshome.net/gpci
+
+### Login
+
+POST {{baseUrl}}/login
+content-type: application/json
+
+{
+    "name": "adminmd",
+    "password": "{{password}}"
+}
+
+###
+
+POST {{baseUrl}}/set_firstpassword
+content-type: application/json
+
+{
+  "id": 213,
+  "password": "aaaa1234",
+  "password_confirm": "aaaa1234"
+}
+
+
+### Logout
+
+POST {{baseUrl}}/logout
+
+
+#GET {{baseUrl}}/admin/specialmail'
+
+###
+GET {{baseUrl}}/ical/classe/1
+
+###
+
+GET {{baseUrl}}/admin/personnes
+
+###
+# NONE
+# GET {{baseUrl}}/activation/{id}/token/{token}
+# POST {{baseUrl}}/set_firstpassword # json 'id' 'password' 'password_confirm'
+# GET {{baseUrl}}/upload/{year}/{week}/{classe}
+# GET {{baseUrl}}/semaine/{year}/{week}/{classe}'
+# GET {{baseUrl}}/plan/years/{current_next}
+# GET {{baseUrl}}/plan/weeks/{current_next}
+# GET {{baseUrl}}/plan/current_next_classe/{current_next}
+# GET {{baseUrl}}/ical/classe/{classeId}
+# GET {{baseUrl}}/ical/{id}
+
+# AUTH
+# POST {{baseUrl}}/login
+# POST {{baseUrl}}/logout
+# POST {{baseUrl}}/theme
+# POST {{baseUrl}}/changePassword
+# POST {{baseUrl}}/changeEmail
+
+# ADMIN
+# GET {{baseUrl}}/admin/personnes/{id}
+# GET {{baseUrl}}/roles
+# GET {{baseUrl}}/public/cours
+# DELETE {{baseUrl}}/admin/personnes/{id}
+# PUT {{baseUrl}}/admin/personnes/{id}
+POST {{baseUrl}}/admin/personnes
+content-type: application/json
+
+{
+    "firstName": "t",
+    "lastName": "a",
+    "email": "ta@example.org",
+    "roles": [
+        {
+            "id": 1
+        }
+    ]
+}
+
+###
+
+# PLANIF
+POST {{baseUrl}}/plan/salle
+content-type: application/json
+
+{
+  "nom": "fff",
+  "toDelete": false
+}
+
+###
+POST {{baseUrl}}/plan/matiere
+content-type: application/json
+
+{
+  "nom": "test",
+  "code": "tst"
+}
+
+###
+DELETE {{baseUrl}}/plan/matiere/196
+content-type: application/json
+
+{
+
+}
+
+###
+# GET {{baseUrl}}/matieres
+# PUT {{baseUrl}}/plan/cours/{id}
+# PUT {{baseUrl}}/plan/matiere/{id}
+# PUT {{baseUrl}}/plan/enseignant/{id}
+# PUT {{baseUrl}}/plan/classe/{id}
+# PUT {{baseUrl}}/plan/salle/{id}
+# DELETE {{baseUrl}}/plan/cours/{id}
+# DELETE {{baseUrl}}/plan/matiere/{id}
+# DELETE {{baseUrl}}/plan/classe/{id}
+# DELETE {{baseUrl}}/plan/salle/{id}
+# DELETE {{baseUrl}}/upload/{year}/{week}/{classe}
+# POST {{baseUrl}}/plan/cours/
+# POST {{baseUrl}}/plan/classe
+# POST {{baseUrl}}/plan/salle
+# POST {{baseUrl}}/upload/{year}/{week}/{classe}
+# GET {{baseUrl}}/plan/cours/assignation
+# GET {{baseUrl}}/plan/cours
+# GET {{baseUrl}}/plan/cours/{id}
+# GET {{baseUrl}}/plan/cours/classe/{id}
+# GET {{baseUrl}}/plan/matiere
+# GET {{baseUrl}}/plan/matiere/{id}
+# GET {{baseUrl}}/plan/enseignant
+# GET {{baseUrl}}/plan/enseignant/{id}
+# GET {{baseUrl}}/plan/classe
+# GET {{baseUrl}}/plan/classe/{id}
+# GET {{baseUrl}}/plan/salle
+# GET {{baseUrl}}/plan/salle/{id}
+
+# PROF
+# GET {{baseUrl}}/ens/indispo
+# POST {{baseUrl}}/ens/indispo
+# DELETE {{baseUrl}}/ens/indispo/{id}
+# POST {{baseUrl}}/ens/indispo
+# GET {{baseUrl}}/ens/cours
+# GET {{baseUrl}}/ens/cours/{id}
