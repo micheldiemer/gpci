@@ -30,6 +30,12 @@ gulp.task("_css", async function () {
     .pipe(gulp.dest(destF() + "/css", { mode: 0o604 }));
 });
 
+gulp.task("_favicon", async function () {
+  gulp
+    .src("./gpci/favicon/**")
+    .pipe(gulp.dest(destF() + "/favicon", { mode: 0o604 }));
+});
+
 gulp.task("_img", async function () {
   gulp
     .src(
@@ -62,12 +68,7 @@ gulp.task("_backend_html", async function () {
 
 gulp.task("_html", async function () {
   gulp
-    .src([
-      "./gpci/**/*.html",
-      "./gpci/favicon.ico",
-      "./gpci/favicon/**",
-      "!./gpci/backend/**",
-    ])
+    .src(["./gpci/**/*.html", "./gpci/favicon.ico", "!./gpci/backend/**"])
     .pipe(gulp.dest(destF(), { mode: 0o604 }));
 });
 
@@ -109,7 +110,9 @@ gulp.task(
       "_backend_img",
       "_backend_php",
       "_css",
+      "_favicon",
       "_html",
+      "_img",
       "_js"
     ),
     "_tmp_cleanup"
