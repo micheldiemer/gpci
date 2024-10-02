@@ -62,7 +62,7 @@ gulp.task("_backend_html", async function () {
 
 gulp.task("_html", async function () {
   gulp
-    .src(["./gpci/**/*.html", "!./gpci/backend/**"])
+    .src(["./gpci/**/*.html", "./gpci/**/*.ico", "!./gpci/backend/**"])
     .pipe(gulp.dest(destF(), { mode: 0o604 }));
 });
 
