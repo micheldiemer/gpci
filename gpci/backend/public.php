@@ -1,6 +1,7 @@
 <?php
 
 use Dompdf\Dompdf;
+use Dompdf\Options;
 use Slim\Http\ServerRequest as Request;
 use Slim\Http\Response;
 
@@ -18,8 +19,9 @@ $app->get('/semaine/{year}/{week}/{classe}', function (Request $request, Respons
 
         return $response->withFileDownload($filename, htmlspecialchars($classe->nom) . "_semaine_" . htmlspecialchars($week) . ".pdf");
     } else {
-        define("DOMPDF_ENABLE_REMOTE", false);
-        $dompdf = new Dompdf();
+        $options = new Options();
+        $options->set('isRemoteEnabled', true);
+        $dompdf = new Dompdf($options);
         $dompdf->setPaper('A4', 'landscape');
         $date = getDateList($week, $year);
         $cours_am = array();
@@ -119,25 +121,35 @@ $app->get('/plan/current_next_classe/{current_next}', function ($request, $respo
 $app->get('/ical/classe/{classeId}',  function ($request, $response, array $args) {
     $classeId = $args['classeId'];
     try {
+        $classe = Classes::where('id', $classeId)->firstOrFail();
         $cours = Classes::where('id', $classeId)->with('cours')->get();
         $events = [];
 
+
         $i = 0;
         foreach ($cours[0]['cours'] as $cour) {
-            $courDetail = Cours::where('id', $cour->id)->with('matiere', 'salle')->get();
-            $start = new dateTime($cour->start);
-            $end = new dateTime($cour->end);
+            // $coursDetail = Cours::where('id', $cour->id)->with('matiere', 'salle')->get();
+            // $start = new dateTime($classe->start);
+            // $end = new dateTime($classe->end);
+
+
+
+            if ($cour->end < $classe->start || $cour->start > $classe->end) {
+                continue;
+            }
 
             $eventParams = array(
-                'start' => $start,
-                'end' => $end,
-                'summary' => 'Cours ' . ' de ' . $courDetail[0]->matiere->nom . ' - ' . $courDetail[0]->salle->nom
+                'start' => new DateTime($cour->start),
+                'end' => new DateTime($cour->end),
+                'summary' => 'Cours ' . ' de ' . $cour->matiere->nom . ' - ' . $cour->salle->nom
             );
 
 
             $events[$i] = new CalendarEvent($eventParams);
             $i++;
         }
+
+
 
         $calParams = array(
             'events' => $events
@@ -147,6 +159,6 @@ $app->get('/ical/classe/{classeId}',  function ($request, $response, array $args
         $calendar->generateDownload();
         return $response->withStatus(200);
     } catch (Exception $e) {
-        return $response->withJson(['message' => "Erreur " . $e->getCode() . ' ' . $e->getMessage()], 500);
+        return $response->withJson(['message' => "Erreur " . $e->getCode() . ' ' . $e->getMessage() . ' ' . $classe], 500);
     }
 });

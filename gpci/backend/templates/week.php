@@ -47,12 +47,8 @@
     }
 </style>
 <div class="header">
-    <?php
-    $imgFile = (new SplFileInfo(__DIR__ . '/../img/logo.gif'))->getRealPath();
-    $html = '<img src="data:"' . mime_content_type($imgFile) . '";base64,' . base64_encode($imgFile) . ' alt="logo">';
-    ?>
-    <?= $html ?>
-    <h1 class=" header-title">PLANNING <?php echo $classe->nom . " - Semaine " . $week; ?></h1> <?= $imgFile  ?>
+    <img src="<?= IFIDE_LOGO_URL ?>" alt="Logo IFIDE SUP'FORMATION" class="logo">
+    <h1 class=" header-title">PLANNING <?php echo $classe->nom . " - Semaine " . $week; ?></h1>
 </div>
 <table class="agenda">
 
