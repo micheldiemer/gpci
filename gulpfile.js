@@ -1,13 +1,10 @@
 /* eslint-disable no-octal */
 const gulp = require("gulp");
-const inject = require("gulp-inject");
 const concat = require("gulp-concat");
 const terser = require("terser");
 const gulpTerser = require("gulp-terser");
-const series = require("stream-series");
-const replace = require("gulp-replace");
+// const uglify = require("gulp-uglify");
 const parseArgs = require("minimist");
-const count = require("gulp-count");
 const pipeline = require("stream/promises").pipeline;
 const rename = require("gulp-rename");
 const clean = require("gulp-clean");
@@ -24,13 +21,25 @@ gulp.task("_backend_php", async function () {
       "./gpci/backend/.htaccess",
       "!./gpci/backend/settings.*.php",
     ])
-    .pipe(gulp.dest(destF() + "/backend", { mode: 0604 }));
+    .pipe(gulp.dest(destF() + "/backend", { mode: 0o604 }));
 });
 
 gulp.task("_css", async function () {
   gulp
     .src("./gpci/css/**/*.css")
-    .pipe(gulp.dest(destF() + "/css", { mode: 0604 }));
+    .pipe(gulp.dest(destF() + "/css", { mode: 0o604 }));
+});
+
+gulp.task("_img", async function () {
+  gulp
+    .src(
+      "./gpci/img/**/*.png",
+      "./gpci/img/**/*.gif",
+      "./gpci/img/**/*.jpg",
+      "./gpci/img/**/*.png",
+      "./gpci/img/**/*.webp"
+    )
+    .pipe(gulp.dest(destF() + "/img", { mode: 0o604 }));
 });
 
 gulp.task("_backend_img", async function () {
@@ -42,19 +51,19 @@ gulp.task("_backend_img", async function () {
       "./gpci/backend/img/*.gif",
       "./gpci/backend/img/*.webp",
     ])
-    .pipe(gulp.dest(destF() + "/backend/img", { mode: 0604 }));
+    .pipe(gulp.dest(destF() + "/backend/img", { mode: 0o604 }));
 });
 
 gulp.task("_backend_html", async function () {
   gulp
     .src(["./gpci/backend/**/*.html"])
-    .pipe(gulp.dest(destF() + "/backend", { mode: 0604 }));
+    .pipe(gulp.dest(destF() + "/backend", { mode: 0o604 }));
 });
 
 gulp.task("_html", async function () {
   gulp
     .src(["./gpci/**/*.html", "!./gpci/backend/**"])
-    .pipe(gulp.dest(destF(), { mode: 0604 }));
+    .pipe(gulp.dest(destF(), { mode: 0o604 }));
 });
 
 gulp.task("_tmp_cleanup", async function () {
@@ -70,8 +79,9 @@ gulp.task("_js", async function () {
     concat("concat.js"),
     gulp.dest(destF() + "/tmp"),
     rename("app.js"),
-    gulpTerser({ compress: true, mangle: true, ecma: 2015 }, terser.minify),
-    gulp.dest(destF(), { mode: 0604 })
+    gulpTerser({ compress: true, mangle: false, ecma: 2015 }, terser.minify),
+    // uglify(),
+    gulp.dest(destF(), { mode: 0o604 })
   );
 });
 
