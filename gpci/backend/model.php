@@ -128,6 +128,7 @@ class Matieres extends Model
 class Cours extends Model
 {
     public $timestamps = false;
+    public $fillable = array('start', 'end', 'id_Matieres', 'id_Salles');
     public function user()
     {
         return $this->belongsTo('Users', 'id_Users')->with('matieres')->select('id', 'firstName', 'lastName', 'email');

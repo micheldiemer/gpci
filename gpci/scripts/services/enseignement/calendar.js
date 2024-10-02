@@ -113,7 +113,7 @@ webApp.factory(
         dayRender: dayRender,
         dayClick: dayClick,
         minTime: "08:00:00",
-        maxTime: "17:30:00",
+        maxTime: "17:00:00",
         dayNames: [
           "Dimanche",
           "Lundi",
@@ -151,7 +151,7 @@ webApp.factory(
         weekNumbers: true,
         eventRender: eventRender,
         minTime: "08:00:00",
-        maxTime: "17:30:00",
+        maxTime: "17:00:00",
         dayNames: [
           "Dimanche",
           "Lundi",

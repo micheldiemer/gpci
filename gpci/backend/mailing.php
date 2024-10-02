@@ -53,7 +53,8 @@ function mailAssignationCours($cours, $mailer)
         'cours_start' => $time_start,
         'cours_end' => $time_end,
         'classe' => $liste_classe,
-        'matiere' => $matiere['nom']
+        'matiere' => $matiere['nom'],
+        'BASE_URL' => BASE_URL,
     );
 
     $template = file_get_contents("templates/assignation_cours.html");
@@ -82,8 +83,8 @@ function mailAnnulationCours($cours, $mailer)
 {
 
     // Conversion date pour extraire Date de Heure séparément
-    $dt_start = new DateTime($cours->start);
-    $dt_end = new DateTime($cours->end);
+    $dt_start = $cours->start;
+    $dt_end = $cours->end;
 
     // Extraction date et heure
     $date = $dt_start->format('d/m/Y');
@@ -96,7 +97,8 @@ function mailAnnulationCours($cours, $mailer)
         'user_lastname' => $cours->user->lastName,
         'cours_date' => $date,
         'cours_start' => $time_start,
-        'cours_end' => $time_end
+        'cours_end' => $time_end,
+        'BASE_URL' => BASE_URL,
     );
 
     $template = file_get_contents("templates/suppression_cours.html");
@@ -114,7 +116,7 @@ function mailAnnulationCours($cours, $mailer)
     $message = (new Email())
         ->from(new Address($smtpSettings['MAIL_FROM'][0], $smtpSettings['MAIL_FROM'][1]))
         ->subject('Suppression d\'un de vos cours à IFIDE SupFormation')
-        ->to(new Address($cours->user->email, $cours->user->firstName + '' + $cours->user->lastName))
+        ->to(new Address($cours->user->email, $cours->user->firstName . ' ' . $cours->user->lastName))
         ->html($template);
 
     // envoie

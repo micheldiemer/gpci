@@ -16,23 +16,23 @@ $app->post('/login', function ($request, $response, array $args) {;
         $data = json_decode($json, true);
         $token = uniqid(rand(), true);
 
-        if (!isset($data) || !isset($data['name']) || !isset($data['password'])) {
-            return $response->withJson('Donner incorrectes')->withStatus(
-                422
-            );
-        }
+        $session = isset($_SESSION['id']);
+        $hasData = isset($data) && isset($data['name']) && isset($data['password']) && $data['name'] != '' && $data['password'] != '';
+        $user_obj = null;
 
-        if (isset($_SESSION['id'])) { ///< if the user is already logged in, we need to disconnect him before connecting another user
+        if (!$hasData && !$session) {
+            return $response->withJson('XX')->withStatus(401);
+        } else if ($hasData && $session) { ///< if the user is already logged in, we need to disconnect him before connecting another user
             $userTemp = Users::where('id', $_SESSION['id'])->with('roles')->first();
             if (is_null($userTemp) || $userTemp->id != $_SESSION['id']) {
                 unset($_SESSION['id']);
                 unset($_SESSION['token']);
                 session_destroy();
                 session_start();
+                $session = false;
             }
         }
-
-        if (!isset($_SESSION['id'])) { ///< if the user isn't logged in, this test will match the user's data corresponding to the user's id
+        if ($hasData && !$session) { ///< if the user isn't logged in, this test will match the user's data corresponding to the user's id
             $userTemp = Users::where('login', $data['name'])->first();
 
             if (is_null($userTemp)) {

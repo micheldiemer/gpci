@@ -11,8 +11,8 @@ $settings = array(
     'prefix' => ''
 );
 
-const BASE_URL = 'https://dev.mshome.net/gpci/backend/';
-const GPCI_URL = 'https://dev.mshome.net/gpci/';
+const BASE_URL = 'https://dev.mshome.net/gpci/backend';
+const GPCI_URL = 'https://dev.mshome.net/gpci';
 
 $smtpSettings = array(
     'MAIL_HOST' => 'localhost',

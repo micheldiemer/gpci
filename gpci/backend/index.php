@@ -74,11 +74,9 @@ $app->get('/activation/{id}/token/{token}', function ($request, $response, array
     if ($user->token == $token) {
         $user->enabled = 1;
         $user->save();
-        ($response->getBody())->write('1');
-        return $response;
+        return $response->withJson(1, 200);
     } else {
-        ($response->getBody())->write(false);
-        return $response->withStatus(400);
+        return $response->withJson(['message' => "Erreur de token"], 400);
     }
 });
 
@@ -124,13 +122,16 @@ $app->post('/set_firstpassword', function ($request, $response, array $args) {
     $user->hash = $hash;
     $user->password = sha1($hash . sha1($data['password']));
     $user->save();
-    ($response->getBody())->write('1');
-    return $response;
+
+    return $response->withJson(1, 200);
 });
 
 $app->post('/theme', function (Request $request, Response $response, array $args) use ($authenticateWithRole) {
 
-    $response = $authenticateWithRole('enseignant', $response);
+    foreach (['administrateur', 'planificateur', 'enseignant'] as $role) {
+        $response = $authenticateWithRole($role, $response);
+        if ($response->getStatusCode() == 200) break;
+    }
     if ($response->getStatusCode() !== 200) {
         return $response;
     }
@@ -140,11 +141,10 @@ $app->post('/theme', function (Request $request, Response $response, array $args
         $data = json_decode($json, true);
         $user->theme = $data["theme"];
         $user->save();
-        ($response->getBody())->write('1');
-        return $response;
+
+        return $response->withJson(1, 200);
     } catch (Exception $e) {
-        ($response->getBody())->write($e);
-        return $response->withStatus(400);
+        return $response->withJson(['message' => "Erreur " . $e->getCode() . ' ' . $e->getMessage()], 500);
     }
 });
 

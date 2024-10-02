@@ -18,6 +18,7 @@ $app->get('/semaine/{year}/{week}/{classe}', function (Request $request, Respons
 
         return $response->withFileDownload($filename, htmlspecialchars($classe->nom) . "_semaine_" . htmlspecialchars($week) . ".pdf");
     } else {
+        define("DOMPDF_ENABLE_REMOTE", false);
         $dompdf = new Dompdf();
         $dompdf->setPaper('A4', 'landscape');
         $date = getDateList($week, $year);
@@ -53,7 +54,7 @@ $app->get('/semaine/{year}/{week}/{classe}', function (Request $request, Respons
 
         // Output the generated PDF to Browser
         $dompdf->stream($classe->nom . "_semaine_" . $week);
-        return;
+        return $response->withStatus(200);
     }
 });
 
@@ -111,9 +112,7 @@ $app->get('/plan/current_next_classe/{current_next}', function ($request, $respo
     $date = getStartEndByYear($current_next);
     $classes = Classes::with('user')->whereRaw('(start >= ? and start <= ?) or (end >= ? and end <= ? )', [$date['start'], $date['end'], $date['start'], $date['end']])->get();
 
-    $response = $response->withJson('');
-    ($response->getBody())->write($classes->toJson());
-    return $response;
+    return $response->withJson($classes, 200);
 });
 
 //Lien Ical public pour les applications calendriers des professeurs
@@ -146,8 +145,8 @@ $app->get('/ical/classe/{classeId}',  function ($request, $response, array $args
 
         $calendar = new Calendar($calParams);
         $calendar->generateDownload();
+        return $response->withStatus(200);
     } catch (Exception $e) {
-        ($response->getBody())->write($e);
-        return $response->withStatus(400);
+        return $response->withJson(['message' => "Erreur " . $e->getCode() . ' ' . $e->getMessage()], 500);
     }
 });

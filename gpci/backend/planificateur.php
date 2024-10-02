@@ -1,5 +1,5 @@
 <?php
-
+const SALLE_DEFAUT = 99;
 /**
  * \file        planificateur.php
  * \author      SIO-SLAM 2014-2016
@@ -36,7 +36,7 @@ $app->get('/plan/cours/assignation', function (Request $request, Response $respo
         }
         return $response->withJson('1');
     } catch (Exception $e) {
-        return $response->getBody()->write($e)->withStatus(400);
+        return $response->withJson(['message' => "Erreur " . $e->getCode() . ' ' . $e->getMessage()], 500);
     }
 });
 
@@ -84,21 +84,26 @@ $app->get('/plan/cours/classe/{id}', function (Request $request, Response $respo
 });
 
 
-$app->post('/plan/cours/', function ($request, $response, array $args) use ($authenticateWithRole) {
+$app->post('/plan/cours', function ($request, $response, array $args) use ($authenticateWithRole) {
 
-    $response = $authenticateWithRole('enseignant', $response);
+    $response = $authenticateWithRole('planificateur', $response);
     if ($response->getStatusCode() !== 200) {
         return $response;
     }
+
     try {
         $json = $request->getBody();
         $data = json_decode($json, true);
 
         $cours = new Cours;
-        $cours->start = $data['start'];
-        $cours->end = $data['end'];
+        $cours->start =
+            DateTime::createFromFormat('Y-m-d\TH:i:s', $data['start']);
+        $cours->end =
+            DateTime::createFromFormat('Y-m-d\TH:i:s', $data['end']);
         $cours->id_Matieres = $data['id_Matieres'];
-        $cours->id_Salles = $data['id_Salles'];
+        $cours->id_Salles = $data['id_Salles'] ?? SALLE_DEFAUT;
+        $cours->assignationSent = 0;
+
         $cours_user = [];
         $indispo = [];
         if (!empty($data['id_Users'])) {
@@ -109,18 +114,15 @@ $app->post('/plan/cours/', function ($request, $response, array $args) use ($aut
             $indispoExists = Indisponibilite::whereRaw('(start >= ? AND end <= ?) and id_Users = ?', [$data['start'], $data['end'], $data['id_Users']])->count();
 
             if ($coursExists == 0  && $indispoExists == 0) {
-                saveCours($cours, $data['classes']);
+                return saveCours($response, $cours, $data['classes']);
             } else {
-                ($response->getBody())->write(array("message" => "Cet enseignant est indisponible!"));
-                return $response->withStatus(400);
+                return $response->withJson(["message" => "Cet enseignant est indisponible!"], 400);
             }
         } else {
-            saveCours($cours, $data['classes']);
-            return $response->withJson('1');
+            return saveCours($response, $cours, $data['classes']);
         }
     } catch (Exception $e) {
-        ($response->getBody())->write($e);
-        return $response->withStatus(400);
+        return $response->withJson(['message' => "Erreur " . $e->getCode() . ' ' . $e->getMessage()], 500);
     }
 });
 
@@ -132,6 +134,7 @@ $app->put('/plan/cours/{id}', function (Request $request, Response $response, ar
     }
     global $mailer;
     $id = $args['id'];
+
     try {
         $json = $request->getBody();
         $data = json_decode($json, true);
@@ -145,8 +148,10 @@ $app->put('/plan/cours/{id}', function (Request $request, Response $response, ar
             }
         }
 
-        $cours->start = $data['start'];
-        $cours->end = $data['end'];
+        // $cours->start =
+        //     DateTime::createFromFormat('Y-m-d\TH:i:s', $data['start']);
+        // $cours->end =
+        //     DateTime::createFromFormat('Y-m-d\TH:i:s', $data['end']);
         $cours->id_Matieres = $data['id_Matieres'];
         $cours->id_Salles = $data['id_Salles'];
         $cours_user = [];
@@ -161,28 +166,53 @@ $app->put('/plan/cours/{id}', function (Request $request, Response $response, ar
             $indispoExists = Indisponibilite::whereRaw('(start >= ? AND end <= ?) and id_Users = ?', [$data['start'], $data['end'], $data['id_Users']])->count();
 
             if ($coursExists == 0  && $indispoExists == 0) {
-                saveCours($cours, $data['classes']);
+                return saveCours($response, $cours, $data['classes'], false);
             } else {
                 return $response->withJson(array("message" => "Cet enseignant est indisponible!"))->withStatus(400);
             }
         } else {
-            saveCours($cours, $data['classes']);
-            return $response->withJson('1');
+            return saveCours($response, $cours, $data['classes'], false);
         }
     } catch (Exception $e) {
-        return $response->withJson($e)->withStatus(400);
+        return $response->withJson(['message' => "Erreur " . $e->getCode() . ' ' . $e->getMessage()], 500);
     }
 });
 
-function saveCours($cours, $classes)
+function saveCours($response, $cours, $classes, $doCreate = true)
 {
-    $cours->save();
+
     $newClasses = [];
     foreach ($classes as $classe) {
-        array_push($newClasses, $classe['id']);
+        if (!is_null($classe) && isset($classe['id']))
+            array_push($newClasses, $classe['id']);
     }
-    // Sauvegarde classe database
-    $cours->classes()->sync($newClasses);
+
+    if ($doCreate) {
+        if (count($newClasses) == 0) {
+            return $response->withJson(array("message" => "Veuillez sélectionner au moins une classe!"))->withStatus(400);
+        };
+
+        $cours = Cours::create([
+            'start' => $cours->start,
+            'end' => $cours->end,
+            'id_Matieres' => $cours->id_Matieres,
+            'id_Salles' => $cours->id_Salles,
+        ]);
+    } else {
+        $cours->save();
+    }
+
+
+    if (is_null($cours)) {
+        return $response->withJson(['message' => 'Erreur DB création cours'])->withStatus(500);
+    }
+
+
+    if ($doCreate || count($newClasses) > 0)
+        // Sauvegarde classe database
+        $cours->classes()->sync($newClasses);
+
+    return $response->withJson('1', 200);
 }
 
 $app->delete('/plan/cours/{id}', function (Request $request, Response $response, array $args) use ($authenticateWithRole) {
@@ -200,11 +230,10 @@ $app->delete('/plan/cours/{id}', function (Request $request, Response $response,
         }
         $cours->classes()->detach();
         $cours->delete();
-        ($response->getBody())->write('1');
-        return $response;
+
+        return $response->withJson(1, 200);
     } catch (Exception $e) {
-        ($response->getBody())->write($e);
-        return $response->withStatus(400);
+        return $response->withJson(['message' => "Erreur " . $e->getCode() . ' ' . $e->getMessage()], 500);
     }
 });
 
@@ -217,9 +246,7 @@ $app->get('/plan/matiere', function (Request $request, Response $response, array
     }
     $matiere = Matieres::with('user')->orderBy('nom')->get();
 
-    $response = $response->withJson('');
-    ($response->getBody())->write($matiere->toJson());
-    return $response;
+    return $response->withJson($matiere, 200);
 });
 
 $app->get('/plan/matiere/{id}', function (Request $request, Response $response, array $args) use ($authenticateWithRole) {
@@ -230,9 +257,7 @@ $app->get('/plan/matiere/{id}', function (Request $request, Response $response, 
     }
     $id = $args['id'];
     $matiere = Matieres::where('id', $id)->first();
-    $response = $response->withJson('');
-    ($response->getBody())->write($matiere->toJson());
-    return $response;
+    return $response->withJson($matiere, 200);
 });
 
 $app->post('/plan/matiere', function (Request $request, Response $response, array $args) use ($authenticateWithRole) {
@@ -314,9 +339,7 @@ $app->get('/plan/enseignant', function (Request $request, Response $response, ar
         ->orderBy('lastName')
         ->get();
 
-    $response = $response->withJson('');
-    ($response->getBody())->write($users->toJson());
-    return $response;
+    return $response->withJson($users, 200);
 });
 
 $app->get('/plan/enseignant/{id}', function (Request $request, Response $response, array $args) use ($authenticateWithRole) {
@@ -332,9 +355,7 @@ $app->get('/plan/enseignant/{id}', function (Request $request, Response $respons
         ->select('id', 'firstName', 'lastName')
         ->first();
 
-    $response = $response->withJson('');
-    ($response->getBody())->write($personne->toJson());
-    return $response;
+    return $response->withJson($personne, 200);
 });
 
 $app->put('/plan/enseignant/{id}', function (Request $request, Response $response, array $args) use ($authenticateWithRole) {
@@ -377,9 +398,7 @@ $app->get('/plan/classe', function (Request $request, Response $response, array 
     }
     $classes = Classes::with('user')->whereRaw('(end >= ?)', [$start])->get();
 
-    $response = $response->withJson('');
-    ($response->getBody())->write($classes->toJson());
-    return $response;
+    return $response->withJson($classes, 200);
 });
 
 $app->get('/plan/classe/{id}', function (Request $request, Response $response, array $args) use ($authenticateWithRole) {
@@ -391,9 +410,7 @@ $app->get('/plan/classe/{id}', function (Request $request, Response $response, a
     $id = $args['id'];
     $classe = Classes::where("id", $id)->with('user')->first();
 
-    $response = $response->withJson('');
-    ($response->getBody())->write($classe->toJson());
-    return $response;
+    return $response->withJson($classe, 200);
 });
 
 $app->put('/plan/classe/{id}', function (Request $request, Response $response, array $args) use ($authenticateWithRole) {
@@ -421,8 +438,7 @@ $app->put('/plan/classe/{id}', function (Request $request, Response $response, a
 
         $classe->save();
 
-        ($response->getBody())->write('1');
-        return $response;
+        return $response->withJson('1', 200);
     } catch (Exception $e) {
         return $response->withJson($e)->withStatus(400);
     }
@@ -490,9 +506,7 @@ $app->get('/plan/salle', function (Request $request, Response $response, array $
     }
     $salles = Salles::all();
 
-    $response = $response->withJson('');
-    ($response->getBody())->write($salles->toJson());
-    return $response;
+    return $response->withJson($salles, 200);
 });
 
 $app->get('/plan/salle/{id}', function (Request $request, Response $response, array $args) use ($authenticateWithRole) {
@@ -504,9 +518,7 @@ $app->get('/plan/salle/{id}', function (Request $request, Response $response, ar
     $id = $args['id'];
     $salle = Salles::where("id", $id)->first();
 
-    $response = $response->withJson('');
-    ($response->getBody())->write($salle->toJson());
-    return $response;
+    return $response->withJson($salle, 200);
 });
 
 $app->post('/plan/salle', function (Request $request, Response $response, array $args) use ($authenticateWithRole) {
@@ -552,10 +564,9 @@ $app->put('/plan/salle/{id}', function (Request $request, Response $response, ar
         $salle->nom = $data['nom'];
         $salle->save();
 
-        ($response->getBody())->write('1');
-        return $response;
+        return $response->withJson(1, 200);
     } catch (Exception $e) {
-        return $response->withJson($e)->withStatus(400);
+        return $response->withJson(['message' => "Erreur " . $e->getCode() . ' ' . $e->getMessage()], 500);
     }
 });
 

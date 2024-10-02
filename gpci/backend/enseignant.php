@@ -89,8 +89,7 @@ $app->post('/ens/indispo', function ($request, $response, array $args) use ($aut
 
     $indispo->save();
 
-    ($response->getBody())->write('1');
-    return $response;
+    return $response->withJson(1, 200);
 });
 
 $app->delete('/ens/indispo/{id}', function ($request, $response, array $args) use ($authenticateWithRole) {
@@ -103,10 +102,9 @@ $app->delete('/ens/indispo/{id}', function ($request, $response, array $args) us
         $id = $args['id'];
         $indispo = Indisponibilite::where('id_Users', $_SESSION['id'])->where('id', $id)->delete();
 
-        ($response->getBody())->write('1');
-        return $response;
+        return $response->withJson(1, 200);
     } catch (Exception $e) {
-        return $response->withJson($e);
+        return $response->withJson(['message' => "Erreur " . $e->getCode() . ' ' . $e->getMessage()], 500);
     }
 });
 
@@ -143,9 +141,8 @@ $app->get('/ical/{id}', function ($request, $response, array $args) {
 
         $calendar = new Calendar($calParams);
         $calendar->generateDownload();
+        return $response->withStatus(200);
     } catch (Exception $e) {
-
-        ($response->getBody())->write($e);
-        return $response->withStatus(400);
+        return $response->withJson(['message' => "Erreur " . $e->getCode() . ' ' . $e->getMessage()], 500);
     }
 });

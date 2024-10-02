@@ -38,3 +38,6 @@ INSERT INTO salles (id, nom) VALUES (99, "(voir écran)");
 ALTER TABLE cours ADD id_Salles int(11) NOT NULL DEFAULT 99;
 UPDATE cours set id_Salles = 99;
 ALTER TABLE cours ADD CONSTRAINT FK_Cours_id_Salles FOREIGN KEY (id_Salles) REFERENCES salles (id);
+
+
+ALTER TABLE cours ALTER COLUMN assignationSent SET DEFAULT 0;

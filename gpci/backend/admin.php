@@ -128,10 +128,9 @@ $app->post('/admin/personnes', function ($request, $response, array $args) use (
         }
 
         // Print the results, 1 = message sent!
-        ($response->getBody())->write($res);
-        return $response;
+        return $response->withJson($res);
     } catch (Exception $e) {
-        return $response->withJson($e);
+        return $response->withJson(['message' => 'Erreur envoi mail ' . $e->getCode() . ' ' . $e->getMessage()], 500);
     }
 });
 
@@ -162,10 +161,9 @@ $app->put('/admin/personnes/{id}', function ($request, $response, array $args) u
 
         $personne->roles()->sync($newRoles);
 
-        ($response->getBody())->write('1');
-        return $response;
+        return $response->withJson(1, 200);
     } catch (Exception $e) {
-        return $response->withJson($e);
+        return $response->withJson(['message' => "Erreur " . $e->getCode() . ' ' . $e->getMessage()], 500);
     }
 });
 
@@ -180,9 +178,8 @@ $app->delete('/admin/personnes/{id}', function ($request, $response, array $args
         $personne = Users::where('id', $id)->with('roles')->firstOrFail();
         $personne->enabled = false;
         $personne->save();
-        ($response->getBody())->write('1');
-        return $response;
+        return $response->withJson(1, 200);
     } catch (Exception $e) {
-        return $response->withJson($e);
+        return $response->withJson(['message' => "Erreur " . $e->getCode() . ' ' . $e->getMessage()], 500);
     }
 });

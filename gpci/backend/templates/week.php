@@ -47,8 +47,12 @@
     }
 </style>
 <div class="header">
-    <img class="logo" src="<?= BASE_URL ?>/img/logo.png" alt="">
-    <h1 class="header-title">PLANNING <?php echo $classe->nom . " - Semaine " . $week; ?></h1>
+    <?php
+    $imgFile = (new SplFileInfo(__DIR__ . '/../img/logo.gif'))->getRealPath();
+    $html = '<img src="data:"' . mime_content_type($imgFile) . '";base64,' . base64_encode($imgFile) . ' alt="logo">';
+    ?>
+    <?= $html ?>
+    <h1 class=" header-title">PLANNING <?php echo $classe->nom . " - Semaine " . $week; ?></h1> <?= $imgFile  ?>
 </div>
 <table class="agenda">
 
@@ -58,7 +62,8 @@
             <?php
             $count = 0;
             foreach ($date as $day) {
-                echo ("<th>" . $date_name[$count] . "<br>" . strftime('%d/%m', strtotime($day)) . "</th>");
+                $date = DateTimeImmutable::createFromFormat('U', strtotime($day));
+                echo ("<th>" . $date_name[$count] . "<br>" . $date->format('d/m') . "</th>");
                 $count += 1;
             }
             ?>
