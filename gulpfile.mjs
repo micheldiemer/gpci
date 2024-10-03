@@ -1,14 +1,18 @@
-/* eslint-disable no-octal */
-const gulp = require("gulp");
-const concat = require("gulp-concat");
-const terser = require("terser");
-const gulpTerser = require("gulp-terser");
-// const uglify = require("gulp-uglify");
-const parseArgs = require("minimist");
-const pipeline = require("stream/promises").pipeline;
-const rename = require("gulp-rename");
-const clean = require("gulp-clean");
+import { createRequire } from "node:module";
+const require = createRequire(import.meta.url);
 
+import gulp from "gulp";
+import concat from "gulp-concat";
+import imagemin from "gulp-imagemin";
+import gulpTerser from "gulp-terser";
+import { minify } from "terser";
+// const uglify = require("gulp-uglify");
+import clean from "gulp-clean";
+import rename from "gulp-rename";
+import { pipeline } from "stream/promises";
+const parseArgs = require("minimist");
+
+const terser = { minify };
 const isElectron = () =>
   parseArgs(process.argv.slice(2), { boolean: ["electron"] }).electron;
 const destF = () =>
@@ -21,19 +25,15 @@ gulp.task("_backend_php", async function () {
       "./gpci/backend/.htaccess",
       "!./gpci/backend/settings.*.php",
     ])
-    .pipe(gulp.dest(destF() + "/backend", { mode: 0o604 }));
+    .pipe(gulp.dest(destF() + "/backend"));
 });
 
 gulp.task("_css", async function () {
-  gulp
-    .src("./gpci/css/**/*.css")
-    .pipe(gulp.dest(destF() + "/css", { mode: 0o604 }));
+  gulp.src("./gpci/css/**/*.css").pipe(gulp.dest(destF() + "/css"));
 });
 
 gulp.task("_favicon", async function () {
-  gulp
-    .src("./gpci/favicon/**")
-    .pipe(gulp.dest(destF() + "/favicon", { mode: 0o604 }));
+  gulp.src("./gpci/favicon/**").pipe(gulp.dest(destF() + "/favicon"));
 });
 
 gulp.task("_img", async function () {
@@ -43,9 +43,11 @@ gulp.task("_img", async function () {
       "./gpci/img/**/*.gif",
       "./gpci/img/**/*.jpg",
       "./gpci/img/**/*.png",
-      "./gpci/img/**/*.webp"
+      "./gpci/img/**/*.webp",
+      { read: true, buffer: false, encoding: false }
     )
-    .pipe(gulp.dest(destF() + "/img", { mode: 0o604 }));
+    .pipe(imagemin())
+    .pipe(gulp.dest(destF() + "/img"));
 });
 
 gulp.task("_backend_img", async function () {
@@ -57,19 +59,17 @@ gulp.task("_backend_img", async function () {
       "./gpci/backend/img/*.gif",
       "./gpci/backend/img/*.webp",
     ])
-    .pipe(gulp.dest(destF() + "/backend/img", { mode: 0o604 }));
+    .pipe(gulp.dest(destF() + "/backend/img"));
 });
 
 gulp.task("_backend_html", async function () {
-  gulp
-    .src(["./gpci/backend/**/*.html"])
-    .pipe(gulp.dest(destF() + "/backend", { mode: 0o604 }));
+  gulp.src(["./gpci/backend/**/*.html"]).pipe(gulp.dest(destF() + "/backend"));
 });
 
 gulp.task("_html", async function () {
   gulp
     .src(["./gpci/**/*.html", "./gpci/favicon.ico", "!./gpci/backend/**"])
-    .pipe(gulp.dest(destF(), { mode: 0o604 }));
+    .pipe(gulp.dest(destF()));
 });
 
 gulp.task("_tmp_cleanup", async function () {
@@ -87,7 +87,7 @@ gulp.task("_js", async function () {
     rename("app.js"),
     gulpTerser({ compress: true, mangle: false, ecma: 2015 }, terser.minify),
     // uglify(),
-    gulp.dest(destF(), { mode: 0o604 })
+    gulp.dest(destF())
   );
 });
 

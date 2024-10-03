@@ -143,6 +143,6 @@ $app->get('/ical/{id}', function ($request, $response, array $args) {
         $calendar->generateDownload();
         return $response->withStatus(200);
     } catch (Exception $e) {
-        return $response->withJson(['message' => "Erreur " . $e->getCode() . ' ' . $e->getMessage()], 500);
+        return $response->withJson(['message' => "Erreur " . $e->getCode() . ' ' . $e->getMessage(), 'exception' => $e], 500);
     }
 });

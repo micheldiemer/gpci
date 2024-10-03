@@ -21,7 +21,6 @@
   "dependencies": {
     "gifsicle": "^7.0.1",
     "gulp-imagemin": "^9.1.0",
-    "imagemin-mozjpeg": "^10.0.0",
     "imagemin-optipng": "^8.0.0",
     "mozjpeg": "^8.0.0",
     "optipng-bin": "^9.0.0"
