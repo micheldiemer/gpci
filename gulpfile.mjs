@@ -16,8 +16,8 @@ const terser = { minify };
 const isElectron = () =>
   parseArgs(process.argv.slice(2), { boolean: ["electron"] }).electron;
 const destF = () => (isElectron() ? "./preprod/electronApp" : "./preprod/gpci");
-const DEV_URL_REGEX = /(webApp.constant.*BASE_URL.*)http.*(['"].*$)/g;
-const PROD_BACKEND_URL = "http://intranet.ifide.net/gpci/backend";
+const DEV_URL_REGEX = /(webApp.constant.*BASE_URL.*)http.*(['"`])/;
+const PROD_BACKEND_URL = "https://intranet.ifide.net/gpci/backend";
 
 gulp.task("_backend_php", async function () {
   gulp
@@ -105,9 +105,9 @@ gulp.task("_js", async function () {
   await pipeline(
     gulp.src(["./gpci/scripts/**/*.js", "!./gpci/app*.js"]),
     concat("concat.js"),
-    replace(DEV_URL_REGEX, `$1${PROD_BACKEND_URL}$2`),
     // gulp.dest(destF() + "/app.js")
     rename("app.js"),
+    replace(DEV_URL_REGEX, `$1${PROD_BACKEND_URL}$2`),
     gulpTerser({ compress: false, mangle: false, ecma: 2015 }, terser.minify),
     // uglify(),
     gulp.dest(destF())

@@ -114,8 +114,8 @@ $app->get('/plan/weeks/{current_next}', function (Request $request, Response $re
                 ));
                 array_push($week_list, $week);
             }
-            return $response->withJson($weeks);
         }
+        return $response->withJson($weeks);
     } catch (\Exception $e) {
         return $response->withJson(['message' => "Erreur " . $e->getCode() . ' ' . $e->getMessage(), 'exception' => $e], 500);
     }
