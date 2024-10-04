@@ -70,6 +70,17 @@ gulp.task("__copyfiles", async function () {
           : "exit"
       )
     )
+    .pipe(
+      exec((file, d = file.isDirectory()) =>
+        !d
+          ? `install -Dv ${file.path} ` +
+            file.path
+              .replace("/gpci/", "/" + destF() + "/")
+              .replace("/./", "/") +
+            " >> liste.txt"
+          : "exit"
+      )
+    )
     // .pipe(
     //   exec(
     //     (file) =>
