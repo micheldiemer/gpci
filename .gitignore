@@ -3,6 +3,7 @@ settings.dev.php
 vendor
 composer.phar
 preprod/*
+liste.sh
 
 # Widnows and MACOS special files
 *~

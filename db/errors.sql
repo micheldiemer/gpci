@@ -8,8 +8,10 @@ sers is null order by start;
 
 -- Cours sans formateur
 select cours.id, cours.start, cours.end, matieres.nom, classes.nom
-  from cours 
-       join matieres on id_Matieres = matieres.id 
+  from cours
+       join matieres on id_Matieres = matieres.id
        join cours_classes on id_Cours = cours.id
        join classes on id_Classes = classes.id
  where cours.id_Users is null order by start;
+
+

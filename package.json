@@ -20,6 +20,9 @@
   },
   "dependencies": {
     "gifsicle": "^7.0.1",
+    "gulp-contains": "^1.2.0",
+    "gulp-debug": "^5.0.1",
+    "gulp-exec": "^5.0.0",
     "gulp-imagemin": "^9.1.0",
     "imagemin-mozjpeg": "^10.0.0",
     "imagemin-optipng": "^8.0.0",

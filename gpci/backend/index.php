@@ -42,6 +42,10 @@ require_once 'icalGenerator.php';
 require_once 'public.php';
 require_once 'test.php';
 
+$app->get('/', function (Request $request, Response $response, array $args) {
+    return $response->withJson('GPCI');
+});
+
 $app->get('/roles', function (Request $request, Response $response, array $args) use ($authenticateWithRole) {
 
     $response = $authenticateWithRole('administrateur', $response);

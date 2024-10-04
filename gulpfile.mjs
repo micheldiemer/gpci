@@ -1,28 +1,30 @@
-import { createRequire } from "node:module";
-const require = createRequire(import.meta.url);
-
 import gulp from "gulp";
 import concat from "gulp-concat";
-import imagemin from "gulp-imagemin";
-import gulpTerser from "gulp-terser";
+import { createRequire } from "node:module";
 import { minify } from "terser";
+const require = createRequire(import.meta.url);
 // const uglify = require("gulp-uglify");
 import clean from "gulp-clean";
-import rename from "gulp-rename";
+import debug from "gulp-debug";
 import { pipeline } from "stream/promises";
 const parseArgs = require("minimist");
-
+const exec = require("gulp-exec");
+const gulpTerser = require("gulp-terser");
+const replace = require("gulp-replace");
+const rename = require("gulp-rename");
 const terser = { minify };
 const isElectron = () =>
   parseArgs(process.argv.slice(2), { boolean: ["electron"] }).electron;
-const destF = () =>
-  isElectron() ? "./preprod/electronApp" : "./preprod/webApp";
+const destF = () => (isElectron() ? "./preprod/electronApp" : "./preprod/gpci");
+const DEV_URL_REGEX = /(webApp.constant.*BASE_URL.*)http.*(['"].*$)/g;
+const PROD_BACKEND_URL = "http://intranet.ifide.net/gpci/backend";
 
 gulp.task("_backend_php", async function () {
   gulp
     .src([
       "./gpci/backend/**/*.php",
       "./gpci/backend/.htaccess",
+      "!./gpci/backend/vendor",
       "!./gpci/backend/settings.*.php",
     ])
     .pipe(gulp.dest(destF() + "/backend"));
@@ -32,34 +34,54 @@ gulp.task("_css", async function () {
   gulp.src("./gpci/css/**/*.css").pipe(gulp.dest(destF() + "/css"));
 });
 
-gulp.task("_favicon", async function () {
-  gulp.src("./gpci/favicon/**").pipe(gulp.dest(destF() + "/favicon"));
-});
-
-gulp.task("_img", async function () {
-  gulp
-    .src(
-      "./gpci/img/**/*.png",
-      "./gpci/img/**/*.gif",
-      "./gpci/img/**/*.jpg",
-      "./gpci/img/**/*.png",
-      "./gpci/img/**/*.webp",
-      { read: true, buffer: false, encoding: false }
+gulp.task("__mk_uploads", async function () {
+  gulp.src("gulpfile.mjs", { read: false }).pipe(
+    exec(
+      'mkdir -m 777 -pv "' + destF() + '/backend/uploads"',
+      function (err, stdout, stderr) {
+        console.log(stdout);
+        console.log(stderr);
+      }
     )
-    .pipe(imagemin())
-    .pipe(gulp.dest(destF() + "/img"));
+  );
 });
 
-gulp.task("_backend_img", async function () {
+gulp.task("__test", async function () {
+  gulp.src(["./gpci/favicon*", "./gpci/favicon*/**"]).pipe(debug());
+});
+
+gulp.task("__copyfiles", async function () {
   gulp
     .src([
-      "./gpci/backend/img/*.png",
-      "./gpci/backend/img/*.jpg",
-      "./gpci/backend/img/*.jpeg",
-      "./gpci/backend/img/*.gif",
-      "./gpci/backend/img/*.webp",
+      "./gpci/backend/vendor/**/*",
+      "./gpci/favicon*",
+      "./gpci/favicon*/**",
+      "./gpci/backend/img/**",
+      "./gpci/img/**",
     ])
-    .pipe(gulp.dest(destF() + "/backend/img"));
+    .pipe(
+      exec((file, d = file.isDirectory()) =>
+        !d
+          ? `echo install -Dv ${file.path} ` +
+            file.path
+              .replace("/gpci/", "/" + destF() + "/")
+              .replace("/./", "/") +
+            " >> liste.sh"
+          : "exit"
+      )
+    )
+    // .pipe(
+    //   exec(
+    //     (file) =>
+    //       `echo install -Dv ${file.path} ` +
+    //       file.path.replace("/gpci/", "/" + destF() + "/").replace("/./", "/")
+    //   )
+    // )
+    .pipe(exec.reporter());
+});
+
+gulp.task("_favicon", async function () {
+  gulp.src("./gpci/favicon/**").pipe(gulp.dest(destF() + "/favicon"));
 });
 
 gulp.task("_backend_html", async function () {
@@ -83,9 +105,10 @@ gulp.task("_js", async function () {
   await pipeline(
     gulp.src(["./gpci/scripts/**/*.js", "!./gpci/app*.js"]),
     concat("concat.js"),
-    gulp.dest(destF() + "/tmp"),
+    replace(DEV_URL_REGEX, `$1${PROD_BACKEND_URL}$2`),
+    // gulp.dest(destF() + "/app.js")
     rename("app.js"),
-    gulpTerser({ compress: true, mangle: false, ecma: 2015 }, terser.minify),
+    gulpTerser({ compress: false, mangle: false, ecma: 2015 }, terser.minify),
     // uglify(),
     gulp.dest(destF())
   );
@@ -93,7 +116,7 @@ gulp.task("_js", async function () {
 
 gulp.task("clean", async function () {
   await pipeline(
-    gulp.src([destF() + "/"], {
+    gulp.src([destF() + "/", "./liste.sh"], {
       read: false,
       allowEmpty: true,
     }),
@@ -107,12 +130,10 @@ gulp.task(
     "clean",
     gulp.parallel(
       "_backend_html",
-      "_backend_img",
       "_backend_php",
+      "__copyfiles",
       "_css",
-      "_favicon",
       "_html",
-      "_img",
       "_js"
     ),
     "_tmp_cleanup"
