@@ -19,6 +19,7 @@
     "terser": "^5.33.0"
   },
   "dependencies": {
+    "del": "^7.1.0",
     "gifsicle": "^7.0.1",
     "gulp-contains": "^1.2.0",
     "gulp-debug": "^5.0.1",
@@ -27,6 +28,7 @@
     "imagemin-mozjpeg": "^10.0.0",
     "imagemin-optipng": "^8.0.0",
     "mozjpeg": "^8.0.0",
-    "optipng-bin": "^9.0.0"
+    "optipng-bin": "^9.0.0",
+    "vinyl-paths": "^5.0.0"
   }
 }

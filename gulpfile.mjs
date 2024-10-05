@@ -4,6 +4,7 @@ import { createRequire } from "node:module";
 import { minify } from "terser";
 const require = createRequire(import.meta.url);
 // const uglify = require("gulp-uglify");
+import { deleteAsync } from "del";
 import clean from "gulp-clean";
 import debug from "gulp-debug";
 import { pipeline } from "stream/promises";
@@ -24,7 +25,7 @@ gulp.task("_backend_php", async function () {
     .src([
       "./gpci/backend/**/*.php",
       "./gpci/backend/.htaccess",
-      "!./gpci/backend/vendor",
+      "!./gpci/backend/vendor/",
       "!./gpci/backend/settings.*.php",
     ])
     .pipe(gulp.dest(destF() + "/backend"));
@@ -50,44 +51,42 @@ gulp.task("__test", async function () {
   gulp.src(["./gpci/favicon*", "./gpci/favicon*/**"]).pipe(debug());
 });
 
+gulp.task("__vendor", async function () {
+  // await pipeline(
+  gulp
+    .src(["./gpci/backend/vendor/autoload.php"])
+    .pipe(
+      exec(
+        (file, newpath = destF() + "/backend/vendor") =>
+          "rm -fr preprod/gpci/backend/vendor ; cp -R gpci/backend/vendor preprod/gpci/backend"
+      )
+    );
+});
+
 gulp.task("__copyfiles", async function () {
   gulp
     .src([
-      "./gpci/backend/vendor/**/*",
       "./gpci/favicon*",
       "./gpci/favicon*/**",
       "./gpci/backend/img/**",
       "./gpci/img/**",
     ])
-    .pipe(
-      exec((file, d = file.isDirectory()) =>
-        !d
-          ? `echo install -Dv ${file.path} ` +
-            file.path
-              .replace("/gpci/", "/" + destF() + "/")
-              .replace("/./", "/") +
-            " >> liste.sh"
-          : "exit"
-      )
-    )
-    .pipe(
-      exec((file, d = file.isDirectory()) =>
-        !d
-          ? `install -Dv ${file.path} ` +
-            file.path
-              .replace("/gpci/", "/" + destF() + "/")
-              .replace("/./", "/") +
-            " >> liste.txt"
-          : "exit"
-      )
-    )
     // .pipe(
-    //   exec(
-    //     (file) =>
-    //       `echo install -Dv ${file.path} ` +
-    //       file.path.replace("/gpci/", "/" + destF() + "/").replace("/./", "/")
+    //   exec((file, d = file.isDirectory(), newpath = file.path
+    //     .replace("/gpci/", "/" + destF() + "/")
+    //     .replace("/./", "/")) =>
+    //     !d
+    //       ? `echo install -Dv ${file.path} ${newpath} >> liste.sh 2>>liste.err`
+    //       : "exit"
     //   )
     // )
+    .pipe(
+      exec((file, d = file.isDirectory(), newpath = file.path
+        .replace("/gpci/", "/" + destF() + "/")
+        .replace("/./", "/")) =>
+        !d ? `install -Dv ${file.path} ${newpath} 2>>liste.err` : "exit"
+      )
+    )
     .pipe(exec.reporter());
 });
 
@@ -100,9 +99,9 @@ gulp.task("_backend_html", async function () {
 });
 
 gulp.task("_html", async function () {
-  gulp
-    .src(["./gpci/**/*.html", "./gpci/favicon.ico", "!./gpci/backend/**"])
-    .pipe(gulp.dest(destF()));
+  // await pipeline(
+  gulp.src(["./gpci/**/*.html", "!./gpci/backend/**"]).pipe(gulp.dest(destF()));
+  // );
 });
 
 gulp.task("_tmp_cleanup", async function () {
@@ -126,23 +125,19 @@ gulp.task("_js", async function () {
 });
 
 gulp.task("clean", async function () {
-  await pipeline(
-    gulp.src([destF() + "/", "./liste.sh"], {
-      read: false,
-      allowEmpty: true,
-    }),
-    clean({ force: true })
-  );
+  await deleteAsync(destF() + "/*");
 });
 
 gulp.task(
   "webApp",
+
   gulp.series(
     "clean",
     gulp.parallel(
       "_backend_html",
       "_backend_php",
       "__copyfiles",
+      "__vendor",
       "_css",
       "_html",
       "_js"
