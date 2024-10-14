@@ -1,4 +1,4 @@
-@password = xxx
+@password = 'Michel#123'
 @PHPSESSID = xxx
 @baseUrl = https://dev.mshome.net/gpci/backend
 
@@ -15,7 +15,7 @@ POST {{baseUrl}}/login
 content-type: application/json
 
 {
-    "name": "adminmd",
+    "name": "mdiemer",
     "password": "{{password}}"
 }
 
@@ -25,9 +25,9 @@ POST {{baseUrl}}/set_firstpassword
 content-type: application/json
 
 {
-  "id": 213,
-  "password": "aaaa1234",
-  "password_confirm": "aaaa1234"
+  "id": 6,
+  "password": "{{password}}",
+  "password_confirm":"{{password}}"
 }
 
 

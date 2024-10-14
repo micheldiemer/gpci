@@ -4,6 +4,7 @@ webApp.controller(
     $scope,
     $rootScope,
     $uibModal,
+    $state,
     Authentification,
     Session,
     AUTH_EVENTS,
@@ -33,7 +34,8 @@ webApp.controller(
     };
 
     const showNotAuthorized = function () {
-      alert("Zone non autorisé");
+      alert("Zone non autorisée");
+      $state.go("home");
     };
 
     $scope.login = function () {
@@ -44,7 +46,7 @@ webApp.controller(
       Authentification.logout();
     };
 
-    $scope.currentUser = null;
+    $scope.currentUser = Session.roles === undefined ? null : Session;
     $scope.userRoles = USERS_ROLES;
     $scope.isAuthorized = Authentification.isAuthorized;
 

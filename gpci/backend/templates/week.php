@@ -32,7 +32,7 @@
         color: white;
     }
 
-    .header {}
+    /* .header {} */
 
     .header-title {
         font-weight: bold;
@@ -57,9 +57,10 @@
             <th>Semaine <?php echo ($week) ?></th>
             <?php
             $count = 0;
+
             foreach ($date as $day) {
-                $date = DateTimeImmutable::createFromFormat('U', strtotime($day));
-                echo ("<th>" . $date_name[$count] . "<br>" . $date->format('d/m') . "</th>");
+                $dateC = DateTimeImmutable::createFromFormat('Y-m-d', $day);
+                echo ("<th>" . $date_name[$count] . "<br>" . $dateC->format('d/m') . "</th>");
                 $count += 1;
             }
             ?>

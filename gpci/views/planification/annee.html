@@ -1,65 +1,57 @@
 <div class="row">
   <div class="col-md-12">
-    <h2>Calendrier</h2>
+    <h2>Planning</h2>
   </div>
 </div>
-<uib-tabset active="active">
-  <uib-tab index="0" heading="{{ year }}">
-    <div class="panel panel-info">
+<div ng-show="isPlanif" style="margin-top: 10px; margin-bottom: 10px;">
+  <b>Seules les classes avec des cours pour la période sélectionnées sont affichées ici.<br>Si une classe n’apparaît
+    pas,
+    veuillez planifier des cours pour cette classe.</b><br>
+</div>
+<div ng-show="isPlanif" style="margin-bottom: 10px;">
+  Lien vers le <a ui-sref="annee">Planning public</a>
+</div>
+<uib-tabset active="activeTabIndex">
+  <uib-tab active="activeTabIndex==$index" ng-repeat="period in current_next" heading="{{ period.year }}">
+    <!-- Planning {{ period.name }} {{ period.year }} -->
+    <td class="panel panel-info">
       <div class="panel-heading">
         <h3 class="panel-title">
-          Planning {{ year }}
+          Planning {{ period.year }}
         </h3>
       </div>
-      <table class="table table-responsive table-hover">
-        <thead>
-          <tr>
-            <th>Semaine</th>
-            <th ng-repeat="classe in classesView">{{ classe.nom }}</th>
-          </tr>
-          <tr ng-repeat="week in weekView">
-            <td>{{ week.number }}</td>
-            <td ng-repeat="classe in classesView">
-              <a ng-show="week.classes.indexOf(classe.id) != -1"
-                href="./backend/semaine/{{week.year}}/{{week.number}}/{{ classe.id }}">Semaine {{week.number}}</a>
-              <i ng-click="onSave(week.year, week.number, classe.nom)" class="fa-regular fa-pen-to-square editIcon"></i>
-            </td>
-          </tr>
-        </thead>
-      </table>
-    </div>
-  </uib-tab>
-  <uib-tab index="1" heading="{{ nextyear }}">
-    <div class="panel panel-info">
-      <div class="panel-heading">
-        <h3 class="panel-title">
-          Planning {{ nextyear }}
-        </h3>
-      </div>
-      <table class="table table-responsive table-hover">
-        <thead>
-          <tr>
-            <th>Semaine</th>
-            <th ng-repeat="classe in next_classesView">{{ classe.nom }}</th>
-          </tr>
-          <tr ng-repeat="week in nextweekView">
-            <td>{{ week.number }}</td>
-            <td ng-repeat="classe in next_classesView">
-              <a ng-show="week.classes.indexOf(classe.id) != -1"
-                href="./backend/semaine/{{week.year}}/{{week.number}}/{{ classe.id }}">Semaine {{week.number}}</a>
-              <i ng-click="onSave()" class="fa-regular fa-pen-to-square editIcon"></i>
-            </td>
+      <table class="table table-responsive table-hover planning">
 
-          </tr>
-        </thead>
+        <tr style="font-weight: bold;">
+          <th style="text-align: center;">Semaine</th>
+          <th style="text-align: center;" ng-repeat="classe in period.classes"
+            ng-show="isPlanif || classe.nbCours > 0 || classe.hasPDF ">
+            {{ classe.nom }}<br><a href="{{ BASE_URL }}/ical/classe/{{ classe.id }}"
+              style="word-break: break-word; font-size: 13px;">Lien
+              ical</a>
+          </th>
+        </tr>
+
+        <tr ng-repeat="week in period.weeks" ng-show="isPlanif || week.nbCours > 0 || week.hasPDF">
+
+          <td style="text-align: center;">{{ week.number }} <span
+              style="font-size:7pt;">({{week.firstDay}}-{{week.lastDay}})</span></td>
+
+          <td style="text-align: center;" ng-repeat="classe in week.classes">
+            <a href="{{ BASE_URL }}/semaine/{{ week.year }}/{{ week.number }}/{{ classe.id }}" target=" _blank"
+              ng-show="isPlanif || classe.nbCours > 0 || classe.hasPDF">
+              {{ classe.nom }} {{ isPlanif ? "S" : "S" }}{{week.number}}</a><span ng-show="isPlanif">&nbsp;({{
+              classe.hasPDF
+              ?
+              "PDF"
+              :
+              week.nbCours}})&nbsp;<i ng-click="onSave(week.year, week.number, classe.id, classe.nom)"
+                class="fa fa-pencil-square-o editIcon"></i></span>
+          </td>
+
+        </tr>
+
       </table>
-    </div>
   </uib-tab>
+
 </uib-tabset>
-<div class="row top10">
-  <div class="col-md-6">
-    <div class="form-group">
-      <label><a target="_blank" href="./#/annee">Lien</a> vers calendrier public</label>
-    </div>
-  </div>
-</div>

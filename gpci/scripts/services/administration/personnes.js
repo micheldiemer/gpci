@@ -22,10 +22,9 @@ webApp.factory("adminService", function ($q, notifService, Restangular) {
 
   function getList() {
     return $q(function (resolve, reject) {
-      if (list) {
+      if (list && list.length > 0) {
         resolve(list);
       } else {
-        console.log(list);
         updateList().then(function () {
           resolve(list);
         });
@@ -70,6 +69,10 @@ webApp.factory("adminService", function ($q, notifService, Restangular) {
       );
     });
   }
+
+  // function reactivate(personne) {
+  //   Restangular.one("admin/personnes");
+  // }
 
   function remove(personne) {
     return $q(function (resolve, reject) {

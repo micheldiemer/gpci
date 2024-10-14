@@ -59,5 +59,13 @@ webApp.controller(
         updateTable();
       });
     };
+
+    // $scope.reactivate = function (personne) {
+    //   adminService.reactivate(personne.id).then(function (per) {
+    //     per.enabled = 0;
+    //     per.save();
+    //     updateTable();
+    //   });
+    // };
   }
 );

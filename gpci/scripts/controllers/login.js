@@ -12,6 +12,11 @@ webApp.controller(
     $scope.form = {};
     $scope.error = false;
 
+    $scope.planning = function () {
+      $uibModalInstance.close();
+      $state.go("annee");
+    };
+
     //fonction qui vérifie si le form est valide
     $scope.submit = function () {
       $scope.submitted = true;
@@ -31,7 +36,12 @@ webApp.controller(
         function (user) {
           //2ème paramètre = fonction de succès
           $uibModalInstance.close();
-          if (user) $state.go(user.home);
+          const nextRoute = location.hash.slice(2).replace("/", ".");
+          if (nextRoute.indexOf("activation") > -1) {
+            $state.go(user.home);
+            return;
+          }
+          $state.go(nextRoute, {}, { reload: true });
         },
         function () {
           //3ème paramètre fonction d'echec

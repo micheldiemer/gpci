@@ -27,11 +27,11 @@ $app->get('/plan/cours/assignation', function (Request $request, Response $respo
         $cours = Cours::with('user')->whereRaw("start >= ? AND end <= ?", [$start, $end])->get();
 
 
-        foreach ($cours as $cour) {
-            if (!empty($cour->user) and $cour->assignationSent == 0) {
-                mailAssignationCours($cour, $mailer);
-                $cour->assignationSent = 1;
-                $cour->save();
+        foreach ($cours as $unCours) {
+            if (!empty($unCours->user) and $unCours->assignationSent == 0) {
+                mailAssignationCours($unCours, $mailer);
+                $unCours->assignationSent = 1;
+                $unCours->save();
             }
         }
         return $response->withJson('1');
@@ -597,15 +597,13 @@ $app->get('/upload/{year}/{week}/{classe}', function (Request $request, Response
     if ($response->getStatusCode() !== 200) {
         return $response;
     }
-    $year = $args['year'];
-    $week = $args['week'];
-    $classe = $args['classe'];
-    $uploadedFiles = $_FILES;
-    $directory = __DIR__ . '/uploads';
-    $filename = $directory . "/" . $year . "-" . $week . "-" . $classe . ".pdf";
+
+    $local = uploadFileName($args['year'] ?? '', $args['week'] ?? '', intval($args['classe']));
+    $filename = $local[0];
+
     // Handle single file upload
     if (file_exists($filename)) {
-        return $response->withJson(['exists' => true, 'fileDirectory' => $year . "-" . $week . "-" . $classe . ".pdf"]);
+        return $response->withJson(['exists' => true, 'fileDirectory' => $local[2]]);
     } else {
         return $response->withJson(['exists' => false, 'fileDirectory' => null]);
     }
@@ -617,19 +615,16 @@ $app->post('/upload/{year}/{week}/{classe}', function (Request $request, Respons
     if ($response->getStatusCode() !== 200) {
         return $response;
     }
-    $year = $args['year'];
-    $week = $args['week'];
-    $classe = $args['classe'];
-    $fileExt = explode('.', $_FILES['file']["tmp_name"]);
-    if (!array_pop($fileExt) == 'pdf') {
 
+    $filename = uploadFileName($args['year'] ?? '', $args['week'] ?? '', intval($args['classe']))[0];
+
+    if (mime_content_type($_FILES['file']["tmp_name"]) !== 'application/pdf') {
         return $response->withJson(['error' => 'Failed to upload file', 'msg' => "Format non autorisé"])->withStatus(400);
     }
 
 
     $uploadedFiles = $_FILES;
-    $directory = __DIR__ . '/uploads';
-    $filename = $directory . "/" . $year . "-" . $week . "-" . $classe . ".pdf";
+
     // Handle single file upload
     $err = "test file";
     if (isset($uploadedFiles['file'])) {
@@ -650,11 +645,7 @@ $app->delete('/upload/{year}/{week}/{classe}', function (Request $request, Respo
         return $response;
     }
     $uploadedFiles = $_FILES;
-    $year = $args['year'];
-    $week = $args['week'];
-    $classe = $args['classe'];
-    $directory = __DIR__ . '/uploads';
-    $filename = $directory . "/" . $year . "-" . $week . "-" . $classe . ".pdf";
+    $filename = uploadFileName($args['year'] ?? '', $args['week'] ?? '', $args['classe'] ?? '')[0];
 
     if (file_exists($filename)) {
         if (unlink($filename)) {

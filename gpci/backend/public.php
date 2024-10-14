@@ -2,6 +2,7 @@
 
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use Illuminate\Database\Capsule\Manager as DB;
 use Slim\Http\ServerRequest as Request;
 use Slim\Http\Response;
 
@@ -9,16 +10,12 @@ $app->get('/semaine/{year}/{week}/{classe}', function (Request $request, Respons
     try {
         $year = $args['year'];
         $week = $args['week'];
-        $classe = $args['classe'];
-        $uploadedFiles = $_FILES;
-        $directory = __DIR__ . '/uploads';
-        $classe = Classes::where('id', $classe)->firstOrFail();
-
-        $filename = $directory . "/" . htmlspecialchars($year) . "-" . htmlspecialchars($week) . "-" . htmlspecialchars($classe->nom) . ".pdf";
+        $classeId = intval($args['classe']);
+        $fileinfo = uploadFileName($year, $week, $classeId);
+        $classe = Classes::find($classeId);
         // Handle single file upload
-        if (file_exists($filename)) {
-
-            return $response->withFileDownload($filename, htmlspecialchars($classe->nom) . "_semaine_" . htmlspecialchars($week) . ".pdf");
+        if (file_exists($fileinfo[0])) {
+            return $response->withFile($fileinfo[0], $fileinfo[2])->withHeader('Content-Disposition', 'inline');
         } else {
             $options = new Options();
             $options->set('isRemoteEnabled', true);
@@ -56,7 +53,7 @@ $app->get('/semaine/{year}/{week}/{classe}', function (Request $request, Respons
             $dompdf->render();
 
             // Output the generated PDF to Browser
-            $dompdf->stream($classe->nom . "_semaine_" . $week);
+            $dompdf->stream($classe->nom . "_semaine_" . $week, ["Attachment" => 0]);
             return $response->withStatus(200);
         }
     } catch (\Exception $e) {
@@ -87,35 +84,136 @@ $app->get('/plan/years/{current_next}', function (Request $request, Response $re
     }
 });
 
-$app->get('/plan/weeks/{current_next}', function (Request $request, Response $response, array $args) {
+$app->get('/plan/weeks', function (Request $request, Response $response, array $args) {
+
+    $current_next = [];
     try {
-        $current_next = $args['current_next'];
-        $date = getStartEndByYear($current_next);
-        $cours = Cours::whereRaw('(start >= ? AND end <= ?)', [$date['start'], $date['end']])->orderBy('start', 'ASC')->get();
-        $weeks = array();
-        $week_list = array();
-        foreach ($cours as $cour) {
-            $classe_list = array();
-            $date = new DateTime($cour->start);
-            $week = $date->format("W");
-            $year = $date->format("Y");
-            $date = getStartAndEndDate($week, $year);
-            $classes = Classes::whereHas('cours', function ($q) use ($date) {
-                $q->whereRaw('(start >= ? AND end <= ?)', [$date[0], $date[1]]);
-            })->get();
-            foreach ($classes as $classe) {
-                array_push($classe_list, $classe->id);
+        $i = 0;
+        foreach (['current', 'next'] as $cn) {
+            $date = getStartEndByYear($cn);
+            $dateStartEnd = $date;
+
+            // $classes =
+            //     Classes::whereRaw('(start >= ? and start <= ?) or (end >= ? and end <= ? )', [$date['start'], $date['end'], $date['start'], $date['end']])->orderBy('nom')->get()->toArray();
+
+
+            $interval = new DateInterval('P1W');
+            $period   = new DatePeriod($date['start'], $interval, $date['end']);
+
+            $dbweeks = DB::table('classes')
+                ->selectRaw('classes.id, classes.nom, classes.start as classeStart, classes.end as classeEnd, count(cours.id) as nbCours, year(cours.start) as year, lpad(week(cours.start,3),2,"0") as week, min(cours.start) as firstCours, max(cours.end) as lastCours')
+                ->join('cours_classes', 'classes.id', '=', 'cours_classes.id_Classes')
+                ->join('cours', 'cours.id', '=', 'cours_classes.id_Cours')
+                // ->whereRaw('(classes.start >= ? and classes.start <= ?) or (classes.end >= ? and classes.end <= ? )', [$date['start'], $date['end'], $date['start'], $date['end']])
+                ->where('cours.start', '>=', $date['start'])
+                ->where('cours.end', '<=', $date['end'])
+                ->orderByRaw('year asc, week asc, classes.nom asc')
+                ->groupBy('classes.id', 'week')
+                ->get();
+
+
+
+            $tabClasses = [];
+            $weeks = [];
+            $periodFirstCours = $date['end'];
+            $periodLastCours = $date['start'];
+
+            foreach ($dbweeks as $dbweek) {
+                if ($dbweek->firstCours < $periodFirstCours) {
+                    $periodFirstCours = DateTimeImmutable::createFromFormat('Y-m-d h:i:s', $dbweek->firstCours);
+                }
+                if ($dbweek->lastCours > $periodLastCours) {
+                    $periodLastCours = DateTimeImmutable::createFromFormat('Y-m-d h:i:s', $dbweek->lastCours);
+                }
+                $week_id = "$dbweek->year-$dbweek->week";
+                $classe_id = $dbweek->id;
+                $classe_nom = $dbweek->nom;
+                $classe_nbCours = $dbweek->nbCours;
+                if (isset($tabClasses[$classe_id])) {
+                    $tabClasses[$classe_id]['nbCours'] += $classe_nbCours;
+                } else {
+                    $tabClasses[$classe_id] = [
+                        'id' => $classe_id,
+                        'nom' => $classe_nom,
+                        'nbCours' => $classe_nbCours,
+                        'firstCours' => $dbweek->firstCours,
+                        'lastCours' => $dbweek->lastCours,
+                        'classeStart' => $dbweek->classeStart,
+                        'classeEnd' => $dbweek->classeEnd,
+                        'hasPDF' => false,
+                        'weeks' => []
+                    ];
+                };
+                $tabClasses[$classe_id]['weeks'][$week_id] ??= 0;
+                $tabClasses[$classe_id]['weeks'][$week_id] += $classe_nbCours;
             }
-            if (!in_array($week, $week_list)) {
-                array_push($weeks, array(
-                    "number" => $week,
-                    "year" => $year,
-                    "classes" => $classe_list
-                ));
-                array_push($week_list, $week);
-            }
+
+            uasort($tabClasses, function ($a, $b) {
+                return $a['nom'] <=> $b['nom'];
+            });
+
+            $j = 0;
+            foreach ($period as $dateP) {
+                $date = DateTimeImmutable::createFromInterface($dateP)->modify('previous monday');
+                $week_id = $date->format('Y-W');
+
+                $weeks[$j] =
+                    [
+                        'week_id' => $week_id,
+                        'year' => $date->format('Y'),
+                        'week' => $date->format('W'),
+                        'number' => $date->format('W'),
+                        'firstDay' => $date->format('d/m'),
+                        'lastDay' => (DateTime::createFromImmutable($date))->add(new DateInterval('P5D'))->format('d/m'),
+                        'nbCours' => 0,
+                        'hasPDF' => false,
+                        'classes' => []
+                    ];
+
+
+                foreach ($tabClasses as $classe) {
+                    $filename = uploadFileName($weeks[$j]['year'], $weeks[$j]['week'], $classe['id'])[0];
+
+                    $hasPdf = file_exists($filename);
+
+                    $weeks[$j]['classes'][] = [
+                        'id' => $classe['id'],
+                        'nom' => $classe['nom'],
+                        'nbCours' => $tabClasses[$classe['id']]['weeks'],
+                        'hasPDF' => $hasPdf,
+                        'nbCours' => $tabClasses[$classe['id']]['weeks'][$week_id] ?? 0,
+                    ];
+
+                    if ($hasPdf) {
+                        $tabClasses[$classe['id']]['hasPDF'] = true;
+                        $weeks[$j]['hasPDF'] = true;
+                    }
+                    $weeks[$j]['nbCours'] += $tabClasses[$classe['id']]['weeks'][$week_id] ?? 0;
+                };
+
+                $j++;
+            };
+
+
+            $years  = [$dateStartEnd['start']->format('Y'), $dateStartEnd['end']->format('Y')];
+
+            $current_next[$i] = [
+                'name' => $cn,
+                'startPeriod' => $dateStartEnd['start'],
+                'endPeriod' => $dateStartEnd['end'],
+                'year' => (($years[0] == $years[1]) ? $years[0] : $years[0] . '/' . $years[1]),
+                'firstCours' => $periodFirstCours,
+                'lastCours' => $periodLastCours,
+                'firstWeek' => $periodFirstCours->format('Y-W'),
+                'lastWeek' => $periodLastCours->format('Y-W'),
+                'weeks' => $weeks,
+                'classes' => array_values($tabClasses),
+            ];
+
+            $i++;
         }
-        return $response->withJson($weeks);
+
+        return $response->withJson($current_next);
     } catch (\Exception $e) {
         return $response->withJson(['message' => "Erreur " . $e->getCode() . ' ' . $e->getMessage(), 'exception' => $e], 500);
     }
@@ -125,7 +223,11 @@ $app->get('/plan/current_next_classe/{current_next}', function ($request, $respo
     try {
         $current_next = $args['current_next'];
         $date = getStartEndByYear($current_next);
-        $classes = Classes::with('user')->whereRaw('(start >= ? and start <= ?) or (end >= ? and end <= ? )', [$date['start'], $date['end'], $date['start'], $date['end']])->get();
+        $classes = Classes::whereRaw('(start >= ? and start <= ?) or (end >= ? and end <= ? )', [$date['start']->format('Y-m-d'), $date['end']->format('Y-m-d'), $date['start']->format('Y-m-d'), $date['end']->format('Y-m-d')])->orderBy('nom')->get();
+
+        foreach ($classes as $classe) {
+            $classe['nbCours'] = $classe->nbCours();
+        }
 
         return $response->withJson($classes, 200);
     } catch (\Exception $e) {

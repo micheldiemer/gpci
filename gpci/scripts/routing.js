@@ -9,12 +9,9 @@ webApp.config(function (
   //Mise en place de l'url de base pour restangular
   RestangularProvider.setBaseUrl(BASE_URL);
 
-  //Cette ligne force toute les routes autresq que celles déclarées vers "/"
-  $urlRouterProvider.otherwise("/");
-
   // NOTA BENE : ui-router utilise la terminologie "state" à la place de "route", mais le principe de base reste le même
 
-  //déclaration des states ( ou routes)
+  //déclaration des states (ou routes)
   $stateProvider
     //D'abord on déclare le nom du state
     .state("accueil", {
@@ -31,10 +28,21 @@ webApp.config(function (
       },
     })
 
+    .state("planification.annee", {
+      url: "/annee",
+      templateUrl: "views/planification/annee.html",
+      controller: "PlanAnneeController",
+      data: {
+        authorizedRoles: [USERS_ROLES.planificateur],
+      },
+    })
     .state("annee", {
       url: "/annee",
-      templateUrl: "views/public/listeAnnee.html",
+      templateUrl: "views/planification/annee.html",
       controller: "PlanAnneeController",
+      data: {
+        authorizedRoles: "any",
+      },
     })
 
     //Page activation de compte
@@ -49,6 +57,9 @@ webApp.config(function (
         token: function ($stateParams) {
           return $stateParams.token;
         },
+      },
+      data: {
+        authorizedRoles: "any",
       },
     })
 
@@ -131,15 +142,6 @@ webApp.config(function (
       },
     })
 
-    .state("planification.annee", {
-      url: "/annee",
-      templateUrl: "views/planification/annee.html",
-      controller: "PlanAnnee",
-      data: {
-        authorizedRoles: [USERS_ROLES.planificateur],
-      },
-    })
-
     //Partie Enseignant
     .state("enseignement", {
       url: "/enseignement",
@@ -172,4 +174,7 @@ webApp.config(function (
         authorizedRoles: [USERS_ROLES.enseignant],
       },
     });
+
+  //Cette ligne force toute les routes autres que celles déclarées vers "/"
+  $urlRouterProvider.otherwise("/");
 });

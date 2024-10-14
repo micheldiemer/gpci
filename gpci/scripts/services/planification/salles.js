@@ -25,7 +25,7 @@ webApp.factory("sallesService", function ($q, notifService, Restangular) {
 
   function getList() {
     return $q(function (resolve, reject) {
-      if (list) {
+      if (list && list.length > 0) {
         resolve(list);
       } else {
         updateList().then(function () {

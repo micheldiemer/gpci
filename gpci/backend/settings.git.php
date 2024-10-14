@@ -24,3 +24,5 @@ $smtpSettings = array(
     'MAIL_USERNAME' => 'root@localhost',
     'MAIL_PASSWORD' => ''
 );
+
+$profiler = false;

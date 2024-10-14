@@ -22,7 +22,7 @@ function getDateList($week, $year)
 }
 
 
-function getStartAndEndDate($week, $year)
+function getStartAndEndDate($week, $year): array
 {
     $date = new DateTime();
     $date->setISODate($year, $week);
@@ -31,7 +31,7 @@ function getStartAndEndDate($week, $year)
     return $return;
 }
 
-function getStartEndByYear($current_next)
+function getStartEndByYear($current_next): array
 {
     if ($current_next == 'current') {
         if (date('Y-m-d', strtotime("now")) >= date('Y-m-d', strtotime("first day of august"))) {
@@ -50,6 +50,12 @@ function getStartEndByYear($current_next)
             $date['end'] = date('Y-m-d', strtotime("last day of july next year"));
         }
     }
+
+    $date['start'] = DateTimeImmutable::createFromFormat('Y-m-d', $date['start']);
+    $date['start']->setTime(7, 0, 0);
+    $date['end'] = DateTimeImmutable::createFromFormat('Y-m-d', $date['end']);
+    $date['end']->setTime(19, 0, 0);
+
     return $date;
 }
 
@@ -80,7 +86,6 @@ $authenticateWithRole = function ($role_required, $response) {
         $id = $_SESSION['id'];
         $role_db = Roles::where('role', $role_required)->firstOrFail();
         $user = Users::where('id', $id)->with('roles')->firstOrFail();    ///<	Matching the current role to the users id
-        // var_dump(($user->roles));
         foreach ($user->roles as $role) {
             if ($role->priority <=  $role_db->priority)
                 return $response->withStatus(200);
@@ -89,3 +94,14 @@ $authenticateWithRole = function ($role_required, $response) {
         return $response->withStatus(401);
     };
 };
+
+
+function uploadFileName($year, $week, $class): array
+{
+    $directory = __DIR__ . '/uploads';
+    $dbClasse =  Classes::find($class);
+    $cf = preg_replace("/[^A-Za-z0-9\- ]/", '_', $dbClasse->nom);
+    $fileName = $year . "-" . $week . "-" . $cf . ".pdf";
+
+    return ["$directory/$fileName", $directory, $fileName];
+}

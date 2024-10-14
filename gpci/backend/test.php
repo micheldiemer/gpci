@@ -36,6 +36,7 @@ $app->get('/fakelogin/{name}', function ($request, $response, array $args) {
             }
 
             if ($user_obj) {
+                $user_home = "";
                 $user_obj->connected = true;
                 $user_obj->save();  ///< to keep the online status in the database
                 $role_priority = 0;

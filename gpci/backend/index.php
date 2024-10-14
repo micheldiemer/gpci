@@ -41,6 +41,7 @@ require_once 'profil.php';
 require_once 'icalGenerator.php';
 require_once 'public.php';
 require_once 'test.php';
+if ($profiler) require_once 'profiler.php';
 
 $app->get('/', function (Request $request, Response $response, array $args) {
     return $response->withJson('GPCI');
@@ -74,8 +75,8 @@ $app->get('/matieres', function (Request $request, Response $response, array $ar
 $app->get('/activation/{id}/token/{token}', function ($request, $response, array $args) {
     $id = $args['id'];
     $token = $args['token'];
-    $user = Users::where('id', $id)->firstOrFail();
-    if ($user->token == $token) {
+    $user = Users::find($id)->where('token', $token)->first();
+    if ($user) {
         $user->enabled = 1;
         $user->save();
         return $response->withJson(1, 200);
@@ -88,7 +89,7 @@ $app->get('/activation/{id}/token/{token}', function ($request, $response, array
 $app->get('/public/cours', function ($request, $response, array $args) {
     $start = $_GET['start'];
     $end = $_GET['end'];
-    $cours_obj = Cours::with('user', 'matiere', 'classes')
+    $cours_obj = Cours::with('user', 'matiere', 'classes', 'salle')
         ->where('start', '>=', $start)
         ->where('start', '<=', $end)
         ->where('assignationSent', 1)
@@ -101,18 +102,18 @@ $app->post('/set_firstpassword', function ($request, $response, array $args) {
     $json = $request->getBody();
     $data = json_decode($json, true);
 
-    if (!$data || !isset($data['id']) || !isset($data['password']) || !isset($data['password_confirm'])) {
+    if (!$data || !isset($data['id']) || !isset($data['password']) || !isset($data['token']) || !isset($data['password_confirm'])) {
         return $response->withStatus(400);
     }
 
-    $user = Users::where('id', $data['id'])->first();
+    $user = Users::find($data['id'])->where('token', $data['token'])->first();
     if (is_null($user)) {
-        return $response->withStatus(401);
+        return $response->withJson('Utilisateur non trouvé', 401);
     }
 
-    if ($user->password !== '') {
-        return $response->withJson('Le mot de passe a déjà été défini. Veuillez contacter l’administrateur du site', 403);
-    }
+    // if ($user->password !== '') {
+    //     return $response->withJson('Le mot de passe a déjà été défini. Veuillez contacter l’administrateur du site', 403);
+    // }
 
     if ($user->enabled == 0) {
         return $response->withJson('Utilisateur non activé', 403);

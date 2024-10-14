@@ -98,9 +98,21 @@ gulp.task("_backend_html", async function () {
   gulp.src(["./gpci/backend/**/*.html"]).pipe(gulp.dest(destF() + "/backend"));
 });
 
+gulp.task("_index", async function () {
+  // await pipeline(
+  gulp.src(["./gpci/index.prod.html"]).pipe(gulp.dest(destF() + "/index.html"));
+});
+
 gulp.task("_html", async function () {
   // await pipeline(
-  gulp.src(["./gpci/**/*.html", "!./gpci/backend/**"]).pipe(gulp.dest(destF()));
+  gulp
+    .src([
+      "./gpci/**/*.html",
+      "!./gpci/backend/**",
+      "!./gpci/index.html",
+      "!./gpci/index.prod.html",
+    ])
+    .pipe(gulp.dest(destF()));
   // );
 });
 
@@ -140,6 +152,7 @@ gulp.task(
       "__vendor",
       "_css",
       "_html",
+      "_index",
       "_js"
     ),
     "_tmp_cleanup"

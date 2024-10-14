@@ -1,10 +1,10 @@
-﻿webApp.factory("weekService", function ($q, notifService, Restangular) {
+webApp.factory("weekService", function ($q, notifService, Restangular) {
   let list = [];
 
   function updateList(year) {
     return $q(function (resolve, reject) {
       //TO DO Lancer toastr chargement
-      Restangular.one("plan/weeks", year)
+      Restangular.one("plan/weeks")
         .getList()
         .then(
           function (data) {
@@ -17,8 +17,8 @@
             reject();
           }
         )
-        .catch(() => {
-          console.error("plan/weeks erreur");
+        .catch(function (err) {
+          console.error("plan/weeks erreur ", err);
         });
     });
   }

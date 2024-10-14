@@ -23,16 +23,13 @@ try {
   includeJs(
     "scripts/controllers/planification/enseignants/enseignantsMatieres.js"
   );
-
   includeJs("scripts/controllers/planification/matieres/matieres.js");
   includeJs("scripts/controllers/planification/matieres/matieresDetails.js");
   includeJs("scripts/controllers/planification/planification.js");
   includeJs("scripts/controllers/planification/salles/salles.js");
   includeJs("scripts/controllers/planification/salles/sallesDetails.js");
   includeJs("scripts/controllers/profil.js");
-  includeJs("scripts/controllers/public/annee.js");
   includeJs("scripts/filters/unique.js");
-  includeJs("scripts/fonctionGlobale.js");
   includeJs("scripts/routing.js");
   includeJs("scripts/services/activation.js");
   includeJs("scripts/services/administration/personnes.js");
@@ -59,6 +56,6 @@ try {
 } catch (error) {
   alert("error");
   console.error(error);
-  // expected output: ReferenceError: nonExistentFunction is not defined
+  // expected out t: ReferenceError: nonExistentFunction is not defined
   // Note - error messages will vary depending on browser
 }

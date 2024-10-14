@@ -141,7 +141,6 @@ webApp.controller(
     $scope.save = function () {
       $scope.cours.toDelete = false;
       $uibModalInstance.close($scope.cours);
-      console.log($scope.cours.id_Salles);
     };
 
     $scope.delete = function () {

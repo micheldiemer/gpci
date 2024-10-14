@@ -18,7 +18,9 @@ $app->get('/ens/cours', function ($request, $response, array $args) use ($authen
     if ($response->getStatusCode() !== 200) {
         return $response;
     }
-    $cours_obj = Cours::with('user', 'matiere', 'classes', 'salle')->whereRaw('DATE(start) >= CURDATE() and id_Users = ? and assignationSent = 1', [$_SESSION['id']])->get();
+
+    $date = getStartEndByYear('current');
+    $cours_obj = Cours::with('user', 'matiere', 'classes', 'salle')->whereRaw('DATE(start) >= \'' . $date['start']->format('Y-m-d') . '\' and id_Users = ? and assignationSent = 1', [$_SESSION['id']])->orderBy('start')->get();
     return $response->withJson($cours_obj);
 });
 

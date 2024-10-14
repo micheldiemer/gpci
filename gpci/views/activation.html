@@ -17,7 +17,10 @@
               name="password_confirm" required />
             <span class="text-danger" ng-show="form.password.$error.required">Veuillez préciser votre mot de
               passe.</span>
-            <span class="text-danger" ng-show="user.password != user.password_confirm">Les deux mots de passe de
+            <span class="text-danger" ng-show="user.password.length > 0 && user.password.length &lt; 8">Le mot de passe
+              doit avoir au moins 8 caractères.<br></span>
+
+            <span class="text-danger" ng-show="user.password != user.password_confirm">Les deux mots de passe ne
               concordent pas</span>
           </div>
           <div class="form-group">

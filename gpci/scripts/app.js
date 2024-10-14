@@ -49,8 +49,8 @@ webApp.config(function ($httpProvider) {
 // test : function checkant le statut de la session à chaque changement de state
 webApp.run(function ($rootScope, $state, Authentification, AUTH_EVENTS) {
   $rootScope.$on("$stateChangeStart", function (event, next) {
-    if (next.name !== "activation") {
-      const authorizedRoles = next.data.authorizedRoles;
+    if (next.name != "activation" || next.name != "annee") {
+      const authorizedRoles = next.data.authorizedRoles ?? null;
       if (!Authentification.isAuthorized(authorizedRoles)) {
         event.preventDefault();
         if (Authentification.isAuthenticated()) {
@@ -66,7 +66,7 @@ webApp.run(function ($rootScope, $state, Authentification, AUTH_EVENTS) {
 
   // test pour navbar, à revoir
   $rootScope.getClass = function (path) {
-    if ($state.current.name === path) {
+    if ($state.current.name == path) {
       return "actif";
     } else {
       return "";

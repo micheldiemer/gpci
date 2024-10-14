@@ -1,32 +1,30 @@
 webApp.controller(
-  "PlanAnnee",
-  function ($scope, $uibModal, $http, classesService, weekService, BASE_URL) {
-    $scope.current_classes = [];
-    $scope.next_classes = [];
+  "PlanAnneeController",
+  function ($scope, $uibModal, $http, Session, weekService, BASE_URL, $state) {
+    $scope.current_next = [];
+    $scope.BASE_URL = BASE_URL;
+    $scope.isPlanif = Session.isPlanif && $state.current.name != "annee";
+    weekService.getList("current").then(function (current_next) {
+      $scope.current_next = current_next;
+      $scope.current_next = [].concat($scope.current_next);
 
-    classesService.getCurrentNextList("current").then(function (classes) {
-      $scope.current_classes = classes;
-      $scope.classesView = [].concat($scope.current_classes);
-    });
-
-    classesService.getCurrentNextList("next").then(function (classes) {
-      $scope.next_classes = classes;
-      $scope.next_classesView = [].concat($scope.next_classes);
-    });
-
-    $scope.year = "";
-    $scope.nextyear = "";
-    $scope.week = [];
-
-    weekService.getList("current").then(function (week) {
-      $scope.week = week;
-      $scope.weekView = [].concat($scope.week);
-    });
-
-    $scope.nextweek = [];
-    weekService.getList("next").then(function (week) {
-      $scope.nextweek = week;
-      $scope.nextweekView = [].concat($scope.nextweek);
+      if (localStorage.getItem("SCROLL")) {
+        let nbInterval = 10;
+        const intervalID = setInterval(() => {
+          const scroll = JSON.parse(localStorage.getItem("SCROLL"));
+          if (
+            window.innerHeight >= scroll.top &&
+            window.innerWidth >= scroll.left
+          ) {
+            scroll.behavior = "instant";
+            window.scrollTo(scroll);
+            localStorage.removeItem("SCROLL");
+            clearInterval(intervalID);
+            nbInterval--;
+            if (nbInterval == 0) clearInterval(intervalID);
+          }
+        }, 300);
+      }
     });
 
     $http({
@@ -49,10 +47,15 @@ webApp.controller(
       function errorCallback(response) {}
     );
 
-    $scope.onSave = function (year, weekNumber, classeId) {
+    $scope.onSave = function (year, weekNumber, classeId, classeNom) {
+      localStorage.setItem(
+        "SCROLL",
+        JSON.stringify({ top: window.scrollY, left: window.scrollX })
+      );
       const modalInstance = $uibModal.open({
         templateUrl: "modals/anneeDetails.html",
         controller: "ModalInstanceCtrl",
+
         resolve: {
           year: function () {
             return year;
@@ -63,7 +66,14 @@ webApp.controller(
           classeId: function () {
             return classeId;
           },
+          classeNom: function () {
+            return classeNom;
+          },
         },
+      });
+
+      modalInstance.closed.then(function (result) {
+        $state.go("planification.annee", {}, { reload: true });
       });
     };
   }
@@ -77,7 +87,8 @@ webApp.controller(
     Restangular,
     year,
     weekNumber,
-    classeId
+    classeId,
+    classeNom
   ) {
     $scope.fileExistsMessage = ""; // Message to display if file exists
 
@@ -90,7 +101,7 @@ webApp.controller(
         .then(function (response) {
           return {
             exists: response.exists,
-            filename: response.fileDirectory, // Assuming your response has 'filename'
+            filename: response.fileDirectory,
           };
         })
         .catch(function (error) {
@@ -105,7 +116,9 @@ webApp.controller(
     // Execute checkFileExists when modal opens
     $uibModalInstance.opened.then(function () {
       checkFileExists().then(function (result) {
-        console.log(result);
+        if (document.getElementById("weekClasse"))
+          document.getElementById("weekClasse").innerHTML =
+            classeNom + " - Semaine " + weekNumber;
         $scope.exists = result.exists;
         if (result.exists) {
           document.getElementById("message").innerHTML =
@@ -115,7 +128,7 @@ webApp.controller(
           document.getElementById("removeButton").disabled = false;
         } else {
           document.getElementById("message").innerHTML = "";
-          document.getElementById("saveButton").disabled = false;
+          document.getElementById("saveButton").disabled = true;
           document.getElementsByClassName("selectFile")[0].disabled = false;
           document.getElementById("removeButton").disabled = true;
         }
@@ -130,7 +143,6 @@ webApp.controller(
       const File = document.getElementsByClassName("selectFile")[0].files[0];
       const formData = new FormData();
       formData.append("file", File);
-      console.log(File);
 
       Restangular.one("upload/" + year + "/" + weekNumber + "/" + classeId)
         .withHttpConfig({ transformRequest: angular.identity })
@@ -141,6 +153,7 @@ webApp.controller(
           } else {
             document.getElementById("message").innerHTML =
               "Document enregistré.";
+
             $uibModalInstance.close($scope.uploadFile);
           }
         })
@@ -152,7 +165,6 @@ webApp.controller(
 
     $scope.remove = function () {
       checkFileExists().then(function (result) {
-        console.log(result);
         $scope.exists = result.exists;
         if (result.exists) {
           Restangular.one("upload/" + year + "/" + weekNumber + "/" + classeId)
@@ -160,13 +172,15 @@ webApp.controller(
             .then(function (response) {
               if (response.deleted) {
                 document.getElementById("message").innerHTML =
-                  "Document supprimée.";
-                document.getElementById("saveButton").disabled = false;
+                  "Document supprimé.";
+                document.getElementById("saveButton").disabled = true;
                 document.getElementsByClassName(
                   "selectFile"
                 )[0].disabled = false;
                 document.getElementById("removeButton").disabled = true;
+                $uibModalInstance.close("Document supprimé.");
               } else {
+                console.error("Error deleting file:", response);
                 document.getElementById("message").innerHTML = "Erreur.";
               }
               return;
@@ -185,7 +199,7 @@ webApp.controller(
     };
 
     $scope.cancel = function () {
-      $uibModalInstance.dismiss("cancel");
+      $uibModalInstance.dismiss("close");
     };
   }
 );
@@ -202,6 +216,7 @@ webApp.directive("fileModel", [
         element.bind("change", function () {
           scope.$apply(function () {
             modelSetter(scope, element[0].files[0]);
+            document.getElementById("saveButton").disabled = false;
           });
         });
       },

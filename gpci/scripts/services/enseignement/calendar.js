@@ -76,6 +76,7 @@ webApp.factory(
           start: rawEventData.start,
           end: rawEventData.end,
           assignationSent: rawEventData.assignationSent,
+          salle: rawEventData.salle.nom,
         };
       },
     };
@@ -95,6 +96,7 @@ webApp.factory(
         if (element.hasClass("coursEvent")) {
           element.find(".fc-content").append("<p>" + event.enseignant + "</p>");
           element.find(".fc-content").append("<p>" + event.classes + "</p>");
+          element.find(".fc-content").append("<p>" + event.salle + "</p>");
         }
     };
 

@@ -4,6 +4,8 @@ vendor
 composer.phar
 preprod/*
 liste.sh
+gpci/backend/uploads/*
+!gpci/backend/uploads/.gitkeep
 
 # Widnows and MACOS special files
 *~

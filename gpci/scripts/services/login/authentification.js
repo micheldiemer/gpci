@@ -21,7 +21,10 @@
                 //lancer la fonction succès ( 2eme paramètre)
                 success(user);
               } catch (error) {
-                console.error("authentification.js JSON sessionStorage error");
+                console.error(
+                  "authentification.js JSON sessionStorage error",
+                  error
+                );
               }
             }
           },
@@ -39,16 +42,17 @@
 
     //verification si user est autorisé
     authService.isAuthorized = function (authorizedRoles) {
+      if (authorizedRoles === "any") return true;
+      if (!authService.isAuthenticated()) return false;
+
       if (!angular.isArray(authorizedRoles)) {
         authorizedRoles = [authorizedRoles];
       }
-      let bool = false;
-      if (authService.isAuthenticated()) {
-        angular.forEach(Session.roles, function (role) {
-          if (authorizedRoles.indexOf(role) !== -1) bool = true;
-        });
+      for (let i = 0; i < Session.roles.length; i++) {
+        let role = Session.roles[i];
+        if (authorizedRoles.indexOf(role) !== -1) return true;
       }
-      return bool;
+      return false;
     };
 
     //logout de l'utilisateur, destruction de la session ( javascript + naviguateur)

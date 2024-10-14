@@ -4,6 +4,7 @@
     $scope.id = Session.id;
     $scope.BASE_URL = BASE_URL;
     $scope.cours = [];
+    $scope.showOldCours = false;
 
     updateTable();
 
@@ -13,9 +14,10 @@
           element.periode =
             moment(element.start).hour() == 8 ? "matin" : "après-midi";
           element.date = moment(element.start).format("DD-MM-YYYY");
+          element.isold = moment(element.start).isBefore(moment());
         });
         Restangular.copy(cours, $scope.cours);
-        $scope.coursView = [].concat($scope.coursr, BASE_URL);
+        $scope.coursView = [].concat($scope.cours, BASE_URL);
       });
     }
   }

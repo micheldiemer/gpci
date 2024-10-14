@@ -43,7 +43,6 @@ function mailAssignationCours($cours, $mailer)
         }
         $i++;
     }
-    $matiere = Matieres::where('id', $cours->id_Matieres)->firstOrFail();
 
     // Liste variable a utilisé dans le template
     $list_var = array(
@@ -53,10 +52,10 @@ function mailAssignationCours($cours, $mailer)
         'cours_start' => $time_start,
         'cours_end' => $time_end,
         'classe' => $liste_classe,
-        'matiere' => $matiere['nom'],
+        'salle' => $cours->salle->nom,
+        'matiere' => $cours->matiere->nom,
         'BASE_URL' => BASE_URL,
     );
-
     $template = file_get_contents("templates/assignation_cours.html");
 
     // ajout des valeur des variables dans le template
@@ -72,7 +71,7 @@ function mailAssignationCours($cours, $mailer)
     $message = (new Email())
         ->from(new Address($smtpSettings['MAIL_FROM'][0], $smtpSettings['MAIL_FROM'][1]))
         ->subject('Assignation d\'un cours à IFIDE SupFormation')
-        ->to(new Address($cours->user->email, $cours->user->firstName + '' + $cours->user->lastName))
+        ->to(new Address($cours->user->email, $cours->user->firstName . ' ' . $cours->user->lastName))
         ->html($template);
 
     // envoie
@@ -83,8 +82,8 @@ function mailAnnulationCours($cours, $mailer)
 {
 
     // Conversion date pour extraire Date de Heure séparément
-    $dt_start = $cours->start;
-    $dt_end = $cours->end;
+    $dt_start = new DateTimeImmutable($cours->start);
+    $dt_end = new DateTimeImmutable($cours->end);
 
     // Extraction date et heure
     $date = $dt_start->format('d/m/Y');

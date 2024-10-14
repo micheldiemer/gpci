@@ -2,8 +2,7 @@
   <div class="col-md-12">
     <div class="form-group">
       <label>Lien ical :</label>
-      <input class="form-control" readonly
-        value="{{ BASE_URL }} + {{ 'https://intranet.ifide.net/gpci/backend//ical/' + id }}" />
+      <input class="form-control" readonly value="{{ BASE_URL + '/ical/' + id }}" />
       <small>Si vous utilisez un calendrier applicatif, vous pouvez utiliser cet URL pour ajouter vos cours à
         celui-ci.</small>
     </div>
@@ -15,6 +14,8 @@
       Liste des cours
     </h3>
   </div>
+  <input type="checkbox" ng-model="showOldCours" ng-true-value="true" ng-false-value="false" /> Afficher les cours
+  passés
   <table st-table="coursView" st-safe-src="cours" class="table table-responsive table-hover">
     <thead>
       <tr>
@@ -43,12 +44,12 @@
       </tr>
     </thead>
     <tbody>
-      <tr ng-repeat="cour in coursView">
-        <td>{{ cour.date }}</td>
-        <td>{{ cour.periode }}</td>
-        <td>{{ cour.matiere.nom }}</td>
+      <tr ng-repeat="cours in coursView" ng-show="showOldCours || !cours.isold">
+        <td>{{ cours.date }}</td>
+        <td>{{ cours.periode }}</td>
+        <td>{{ cours.matiere.nom }}</td>
         <td><span data-ng-repeat="classe in cour.classes"> {{ classe.nom }}{{$last ? '' : ' / '}} </span></td>
-        <td>{{ cour.salle.nom }}</td>
+        <td>{{ cours.salle.nom }}</td>
       </tr>
     </tbody>
     <tfoot>
