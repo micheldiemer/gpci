@@ -24,7 +24,7 @@ $app->get('/plan/cours/assignation', function (Request $request, Response $respo
     try {
         $start = $_GET['start'];
         $end = $_GET['end'];
-        $cours = Cours::with('user')->whereRaw("start >= ? AND end <= ?", [$start, $end])->get();
+        $cours = Cours::with('user')->whereRaw("assignationSent = 0 AND start >= ? AND end <= ?", [$start, $end])->get();
 
 
         foreach ($cours as $unCours) {

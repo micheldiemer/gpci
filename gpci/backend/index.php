@@ -10,6 +10,13 @@
  * \details     this file contains the includes for the backend
  */
 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(-1);
+ini_set('error_log', __DIR__ . '/logs/error.log');
+ini_set('date.timezone', 'Europe/Paris');
+error_log('access: Method ' . $_SERVER['REQUEST_METHOD'] . ' URI ' . $_SERVER['REQUEST_URI']);
+
 use Slim\Http\ServerRequest as Request;
 use Slim\Http\Response as Response;
 use Slim\Factory\AppFactory;
@@ -21,13 +28,6 @@ $app = AppFactory::create();
 $app->setBasePath('/gpci/backend');
 $app->addRoutingMiddleware();
 $errorMiddleware = $app->addErrorMiddleware(true, true, true);
-
-
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(-1);
-
-
 
 require_once file_exists('settings.prod.php') ? 'settings.prod.php' : 'settings.git.php';
 require_once 'model.php';
@@ -45,6 +45,10 @@ if ($profiler) require_once 'profiler.php';
 
 $app->get('/', function (Request $request, Response $response, array $args) {
     return $response->withJson('GPCI');
+});
+
+$app->get('/index.php', function (Request $request, Response $response, array $args) {
+    return $response->withJson('GPCI index');
 });
 
 $app->get('/roles', function (Request $request, Response $response, array $args) use ($authenticateWithRole) {

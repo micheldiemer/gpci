@@ -13,7 +13,7 @@ $settings = array(
 
 const BASE_URL = 'https://dev.mshome.net/gpci/backend';
 const GPCI_URL = 'https://dev.mshome.net/gpci';
-const IFIDE_LOGO_URL = 'https://supformation.fr/wp-content/uploads/2023/03/LOGO-SUP-FORMATION-AVANCER-SE-FORMER-1024x529.png';
+const IFIDE_LOGO_URL = 'https://intranet.ifide.net/gpci/img/logo.png';
 
 $smtpSettings = array(
     'MAIL_HOST' => 'localhost',

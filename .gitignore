@@ -6,6 +6,9 @@ preprod/*
 liste.sh
 gpci/backend/uploads/*
 !gpci/backend/uploads/.gitkeep
+gpci/backend/logs/*
+!gpci/backend/logs/.gitkeep
+
 
 # Widnows and MACOS special files
 *~
